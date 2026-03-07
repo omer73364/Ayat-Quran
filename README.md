@@ -35,7 +35,6 @@ _Stay connected to the Quran — one ayah at a time_
 - 📊 **Progress Tracking** — Daily reading goals with a weekly chart to visualize your consistency
 - 🌙 **Dark Mode** — Full dark/light theme support with smooth transitions
 - 📤 **Share** — Share any ayah directly from the app
-- ⚡ **Persistent Notifications** — Notifications survive device restarts and work across all major OEMs (Samsung, Xiaomi, Huawei, OnePlus)
 
 ---
 
