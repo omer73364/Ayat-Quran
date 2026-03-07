@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Deep Islamic green gradient background -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:startColor="#145C4A"
+        android:endColor="#1B7A63"
+        android:angle="135"
+        android:type="linear" />
+</shape>

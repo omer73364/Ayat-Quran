@@ -1,0 +1,36 @@
+# ── Local machine config ─────────────────────────────────────
+local.properties
+*.local.properties
+
+# ── Build outputs ────────────────────────────────────────────
+build/
+app/build/
+out/
+release/
+app/release/
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# ── Gradle ───────────────────────────────────────────────────
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
+
+# ── Android Studio / IntelliJ ────────────────────────────────
+.idea/
+*.iml
+*.ipr
+*.iws
+captures/
+.externalNativeBuild/
+.cxx/
+
+# ── Signing keys — NEVER commit ──────────────────────────────
+*.jks
+*.keystore
+*.p12
+*.pfx
+
+# ── macOS ────────────────────────────────────────────────────
+.DS_Store

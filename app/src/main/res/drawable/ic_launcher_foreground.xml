@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Open Quran book icon with decorative star above.
+    Designed for adaptive icon foreground (108x108dp safe zone = 72dp centered).
+    All paths hand-crafted to be centered in the 108dp viewport.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Decorative 8-pointed star above the book -->
+    <path
+        android:fillColor="#E8C96A"
+        android:pathData="
+            M54,22
+            L55.8,27.5 L61.5,27.5 L57,30.8 L58.8,36.3 L54,33 L49.2,36.3 L51,30.8 L46.5,27.5 L52.2,27.5 Z
+        " />
+
+    <!-- Left page of open book -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:alpha="0.97"
+        android:pathData="
+            M26,42
+            C26,40.3 27.3,39 29,39
+            L52,39
+            L52,78
+            L29,78
+            C27.3,78 26,76.7 26,75
+            Z
+        " />
+
+    <!-- Right page of open book -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:alpha="0.97"
+        android:pathData="
+            M56,39
+            L79,39
+            C80.7,39 82,40.3 82,42
+            L82,75
+            C82,76.7 80.7,78 79,78
+            L56,78
+            Z
+        " />
+
+    <!-- Spine / center crease -->
+    <path
+        android:strokeColor="#1B7A63"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M54,39 L54,78"
+        android:fillColor="#00000000" />
+
+    <!-- Left page - text lines -->
+    <path
+        android:strokeColor="#1B7A63"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:alpha="0.5"
+        android:pathData="M31,48 L49,48"
+        android:fillColor="#00000000" />
+    <path
+        android:strokeColor="#1B7A63"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:alpha="0.5"
+        android:pathData="M31,54 L49,54"
+        android:fillColor="#00000000" />
+    <path
+        android:strokeColor="#1B7A63"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:alpha="0.5"
+        android:pathData="M31,60 L49,60"
+        android:fillColor="#00000000" />
+    <path
+        android:strokeColor="#1B7A63"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:alpha="0.5"
+        android:pathData="M31,66 L44,66"
+        android:fillColor="#00000000" />
+
+    <!-- Right page - text lines -->
+    <path
+        android:strokeColor="#1B7A63"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:alpha="0.5"
+        android:pathData="M59,48 L77,48"
+        android:fillColor="#00000000" />
+    <path
+        android:strokeColor="#1B7A63"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:alpha="0.5"
+        android:pathData="M59,54 L77,54"
+        android:fillColor="#00000000" />
+    <path
+        android:strokeColor="#1B7A63"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:alpha="0.5"
+        android:pathData="M59,60 L77,60"
+        android:fillColor="#00000000" />
+    <path
+        android:strokeColor="#1B7A63"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:alpha="0.5"
+        android:pathData="M64,66 L77,66"
+        android:fillColor="#00000000" />
+
+    <!-- Bottom curve / book base shadow -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:alpha="0.3"
+        android:pathData="M30,78 Q54,84 78,78" />
+
+    <!-- Small gold dot accent on spine top -->
+    <path
+        android:fillColor="#E8C96A"
+        android:pathData="M54,39 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+
+</vector>
