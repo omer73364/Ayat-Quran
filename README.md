@@ -1,12 +1,6 @@
-<center>
-
 # بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
 
 ## 📖 آيات قرآنية
-
-</center>
-
-<br/>
 
 **A beautiful daily Quran reminder app for Android**
 
