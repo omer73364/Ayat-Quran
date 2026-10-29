@@ -4,3 +4,22 @@
 .hero-description,.feature-grid p,.faq details p,.section-intro>p{color:#66745f}.download-meta,.facts div span,.quote-source,.faq-heading p,.download-card p,.release-meta{color:#6b785f}.feature-foot{color:#6b795f}
 @media(max-width:760px){.hero-description,.feature-grid p,.faq summary,.faq details p{font-size:14px}.section-intro>p,.faq-heading p,.download-card p{font-size:13px}.feature-foot{font-size:11px}.download-meta{font-size:10px}}
 .facts strong,.footer-year{font-family:Cairo,Tahoma,Arial,sans-serif}.facts strong{font-size:29px}@media(max-width:760px){.facts strong{font-size:25px}}
+
+/* Clear Arabic interface type, with comfortable sizes for supporting copy. */
+body{font-size:16px;line-height:1.8}
+.nav nav{font-size:15px}.eyebrow{font-size:14px}.hero-description{font-size:17px}
+.button,.hero-actions .button,.download-card .button{font-size:15px}.button.small{font-size:14px}.text-link{font-size:14px}
+.download-meta{font-size:12px;flex-wrap:wrap}.facts div span{font-size:14px}
+.section-intro>p,.feature-grid p,.experience-lead,.faq-heading p,.faq details p,.download-card p{font-size:15px}
+.feature-foot{font-size:13px}.feature-number{font-size:14px}.screen-tabs strong{font-size:16px}.screen-tabs small{font-size:13px;line-height:1.8}
+.quote-source,.release-meta,.release-link,.footer p,.footer>a:last-of-type{font-size:12px}.faq summary{font-size:16px}
+.floating-note strong{font-size:13px}.floating-note div>span{font-size:11px}
+@media(max-width:760px){
+ .nav .small{font-size:12px}.nav nav{font-size:16px}.hero-description{font-size:15px}
+ .hero-actions{gap:18px;flex-wrap:wrap}.hero-actions .button,.download-card .button{font-size:14px}.text-link{font-size:13px}
+ .download-meta{font-size:11px}.facts{gap:13px}.facts div span{font-size:12px}
+ .feature-grid p,.faq summary,.faq details p,.section-intro>p,.faq-heading p,.download-card p{font-size:15px}
+ .screen-tabs{grid-template-columns:1fr}.screen-tabs strong{font-size:15px}.screen-tabs small{display:block;font-size:12px}
+ .screen-tabs button{padding:16px}.feature-foot{font-size:12px}.release-meta{font-size:11px}
+ .footer p{width:auto;text-align:right;font-size:12px}.footer>a:last-of-type{font-size:12px}
+}
