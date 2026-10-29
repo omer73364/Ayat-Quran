@@ -7,5 +7,7 @@ data class UserSettings(
     val reminderToHour: Int = 22,
     val reminderToMinute: Int = 0,
     val dailyGoal: Int = 5,
+    val remindersPerDay: Int = 5,
+    val arabicFontSize: Int = 28,
     val darkMode: Boolean = false,
 )
