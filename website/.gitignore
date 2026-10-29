@@ -1,2 +1,5 @@
 # The website distributes the verified, signed app as a downloadable asset.
 !assets/Ayat-Quran-*.apk
+
+# Generated static deployment output.
+dist/
