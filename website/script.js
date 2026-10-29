@@ -12,7 +12,7 @@ menu.addEventListener('click', () => {
 });
 navigation.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
 document.addEventListener('keydown', event => { if (event.key === 'Escape') closeMenu(); });
-const screenDescriptions = {reader: 'شاشة القراءة بملء الشاشة', saved: 'المحفوظات والبحث في الآيات', reminders: 'حالة التذكيرات وإعداداتها', home: 'الرئيسية وتقدم الورد اليومي'};
+const screenDescriptions = {saved: 'المحفوظات والبحث في الآيات', reminders: 'حالة التذكيرات وإعداداتها', home: 'الرئيسية وتقدم الورد اليومي'};
 const tabs = [...document.querySelectorAll('[role="tab"]')];
 const screenImage = document.querySelector('#screen-image');
 let imageTimer;
