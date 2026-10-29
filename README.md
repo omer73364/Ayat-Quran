@@ -38,13 +38,10 @@
 
 <div align="center">
 
-<img src="https://github.com/user-attachments/assets/57bcf7d4-969c-469a-a05e-5288b93e8607" width="200" alt="Ayat Quran screenshot 1" />
-<img src="https://github.com/user-attachments/assets/01396621-4deb-4ff2-a8bf-c9f0e8396ba3" width="200" alt="Ayat Quran screenshot 2" />
-<img src="https://github.com/user-attachments/assets/4d08cc9f-d90b-4a2e-b36f-f773b68b51dc" width="200" alt="Ayat Quran screenshot 3" />
-<img src="https://github.com/user-attachments/assets/7e7b2d7d-59d9-433e-97cc-9d6a8fb375bf" width="200" alt="Ayat Quran screenshot 4" />
-<img src="https://github.com/user-attachments/assets/d6a89fe3-c71f-4227-a8f6-96c730884907" width="200" alt="Ayat Quran screenshot 5" />
-<img src="https://github.com/user-attachments/assets/df350b7f-6bf8-4904-85e5-6cb62b2a2dd3" width="200" alt="Ayat Quran screenshot 6" />
-<img src="https://github.com/user-attachments/assets/b78e410b-a867-4875-924c-57366062a42f" width="200" alt="Ayat Quran screenshot 7" />
+<img src="docs/screenshots/home.png" width="200" alt="Home and daily reading progress" />
+<img src="docs/screenshots/saved.png" width="200" alt="Saved verses and search" />
+<img src="docs/screenshots/reminders.png" width="200" alt="Reminder status and settings" />
+<img src="docs/screenshots/reader.png" width="200" alt="Full-screen reader" />
 
 </div>
 
