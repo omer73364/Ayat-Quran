@@ -23,3 +23,11 @@ body{font-size:16px;line-height:1.8}
  .screen-tabs button{padding:16px}.feature-foot{font-size:12px}.release-meta{font-size:11px}
  .footer p{width:auto;text-align:right;font-size:12px}.footer>a:last-of-type{font-size:12px}
 }
+/* Compact download actions with comfortable touch targets. */
+.hero-actions .button,.download-card .button{min-height:46px;padding:10px 17px;font-size:14px;gap:10px;line-height:1.6}
+.hero-actions .button svg,.download-card .button svg{width:20px;height:20px}
+.hero-actions .button .button-arrow,.download-card .button .button-arrow{width:17px;margin-right:6px}
+.nav .button.small{min-height:40px;padding:8px 14px;font-size:13px;gap:12px;line-height:1.6}
+@media(max-width:760px){.hero-actions .button,.download-card .button{font-size:13px;padding:10px 14px}.nav .button.small{font-size:12px;padding:8px 11px}}
+.button{white-space:nowrap}
+@media(max-width:400px){.nav{gap:10px}.nav .brand{font-size:14px;gap:6px}.nav .brand img{width:30px;height:30px}.nav .button.small svg{display:none}}
