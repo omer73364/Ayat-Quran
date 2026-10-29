@@ -1,5 +1,8 @@
 package app.rork.quran.data.repository
 
+import androidx.room.withTransaction
+import app.rork.quran.data.local.AppDatabase
+import app.rork.quran.data.local.entity.ReadingEventEntity
 import app.rork.quran.data.local.dao.StatsDao
 import app.rork.quran.data.local.entity.StatsEntity
 import app.rork.quran.domain.model.DailyRead
@@ -15,6 +18,7 @@ import javax.inject.Singleton
 
 @Singleton
 class StatsRepository @Inject constructor(
+    private val database: AppDatabase,
     private val statsDao: StatsDao,
     private val gson: Gson,
 ) {
@@ -26,7 +30,8 @@ class StatsRepository @Inject constructor(
     suspend fun getStats(): ReadingStats =
         statsDao.getStats()?.toDomain() ?: ReadingStats()
 
-    suspend fun markAsRead() {
+    suspend fun markAsRead(token: String) = database.withTransaction {
+        if (statsDao.insertReadingEvent(ReadingEventEntity(token)) == -1L) return@withTransaction
         val stats = getStats()
         val today = LocalDate.now().format(dateFormat)
         val history = stats.dailyHistory.toMutableList()
@@ -45,11 +50,16 @@ class StatsRepository @Inject constructor(
         statsDao.upsertStats(newStats.toEntity())
     }
 
-    suspend fun toggleBookmark(ayahId: String) {
+    suspend fun toggleBookmark(ayahId: String) = database.withTransaction {
         val stats = getStats()
         val bookmarks = stats.bookmarkedIds.toMutableList()
         if (bookmarks.contains(ayahId)) bookmarks.remove(ayahId) else bookmarks.add(ayahId)
         statsDao.upsertStats(stats.copy(bookmarkedIds = bookmarks).toEntity())
+    }
+
+    suspend fun removeBookmark(ayahId: String) = database.withTransaction {
+        val stats = getStats()
+        statsDao.upsertStats(stats.copy(bookmarkedIds = stats.bookmarkedIds - ayahId).toEntity())
     }
 
     private fun calculateStreak(history: List<DailyRead>): Int {

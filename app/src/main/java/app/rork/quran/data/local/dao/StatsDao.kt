@@ -16,6 +16,9 @@ interface StatsDao {
     @Query("SELECT * FROM reading_stats WHERE id = 0")
     suspend fun getStats(): StatsEntity?
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertReadingEvent(event: app.rork.quran.data.local.entity.ReadingEventEntity): Long
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertStats(stats: StatsEntity)
 }
