@@ -31,6 +31,7 @@ data class ReminderStatus(
     val backgroundRestricted: Boolean = false,
     val nextReminder: Long? = null,
     val recovery: String = "",
+    val launchSettingsAvailable: Boolean = false,
 )
 
 @HiltViewModel
@@ -85,29 +86,21 @@ class SettingsViewModel @Inject constructor(
     val feedback = MutableStateFlow<String?>(null)
     val isRepairing = MutableStateFlow(false)
     val reminderStatus = MutableStateFlow(ReminderStatus())
-    val isHonor = Build.MANUFACTURER.equals("HONOR", true) || Build.MANUFACTURER.equals("HUAWEI", true)
+    private val launchSettings = BackgroundLaunchSettings(context)
 
     suspend fun refreshReminderStatus() = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
         reminderStatus.value = ReminderStatus(
             notificationsAllowed(), canScheduleExactAlarms(), isBatteryOptimizationIgnored(),
             isBackgroundRestricted(), alarmScheduler.nextReminderTime(), alarmScheduler.recoveryStatus(),
+            launchSettings.isAvailable(),
         )
     }
 
     fun openLaunchSettings() {
-        // OEM activities are not a public API; always retain the system settings fallback.
-        val candidates = listOf(
-            android.content.ComponentName("com.hihonor.systemmanager", "com.hihonor.systemmanager.startupmgr.ui.StartupNormalAppListActivity"),
-            android.content.ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity"),
-        )
-        for (component in candidates) {
-            try {
-                context.startActivity(Intent().setComponent(component).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                return
-            } catch (_: android.content.ActivityNotFoundException) {
-            } catch (_: SecurityException) { }
+        if (!launchSettings.open()) {
+            feedback.value = "ابحث في إعدادات التطبيق عن التشغيل التلقائي أو البطارية والعمل في الخلفية"
+            openAppSettings()
         }
-        context.startActivity(Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
     private val updateMutex = Mutex()
 

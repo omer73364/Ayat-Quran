@@ -8,6 +8,22 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
+    <!-- Only the system managers whose launch settings we can offer to the user. -->
+    <queries>
+        <package android:name="com.hihonor.systemmanager" />
+        <package android:name="com.huawei.systemmanager" />
+        <package android:name="com.miui.securitycenter" />
+        <package android:name="com.coloros.safecenter" />
+        <package android:name="com.oppo.safe" />
+        <package android:name="com.vivo.permissionmanager" />
+        <package android:name="com.iqoo.secure" />
+        <package android:name="com.asus.mobilemanager" />
+        <package android:name="com.oneplus.security" />
+        <package android:name="com.samsung.android.lool" />
+        <package android:name="com.evenwell.powersaving.g3" />
+        <package android:name="com.letv.android.letvsafe" />
+    </queries>
+
     <application
         android:name=".MainApplication"
         android:allowBackup="true"

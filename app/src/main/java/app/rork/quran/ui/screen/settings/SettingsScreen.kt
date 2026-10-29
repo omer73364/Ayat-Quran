@@ -223,7 +223,7 @@ fun SettingsScreen(
 
             ReminderStatusCard(
                 enabled = settings.reminderEnabled, status = status, repairing = repairing,
-                feedback = feedback, isHonor = viewModel.isHonor,
+                feedback = feedback, hasLaunchSettings = status.launchSettingsAvailable,
                 onNotifications = viewModel::openNotificationSettings,
                 onExactAlarms = viewModel::openExactAlarmSettings,
                 onBattery = { showBatteryDialog = true },

@@ -23,7 +23,7 @@ import app.rork.quran.ui.theme.LocalQuranColors
 
 @Composable
 fun ReminderStatusCard(
-    enabled: Boolean, status: ReminderStatus, repairing: Boolean, feedback: String?, isHonor: Boolean,
+    enabled: Boolean, status: ReminderStatus, repairing: Boolean, feedback: String?, hasLaunchSettings: Boolean,
     onNotifications: () -> Unit, onExactAlarms: () -> Unit, onBattery: () -> Unit,
     onLaunchSettings: () -> Unit, onRepair: () -> Unit, onTest: () -> Unit,
 ) {
@@ -58,16 +58,19 @@ fun ReminderStatusCard(
                     status.batteryExempt -> "دون تقييد تحسين البطارية"
                     else -> "تحسين البطارية مفعّل"
                 }, status.batteryExempt && !status.backgroundRestricted, onBattery)
-                if (isHonor) {
-                    Column(Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
-                        .background(colors.accent.copy(alpha = .09f), RoundedCornerShape(16.dp)).padding(14.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("للتذكير بعد إعادة تشغيل HONOR", color = colors.text, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
-                        Text("ابحث عن «تشغيل التطبيقات» في إعدادات الهاتف، وأوقف الإدارة التلقائية للتطبيق، ثم فعّل التشغيل التلقائي والتشغيل الثانوي والعمل في الخلفية.",
-                            color = colors.textMuted, fontSize = 12.sp, lineHeight = 21.sp)
-                        TextButton(onClick = onLaunchSettings, contentPadding = PaddingValues(0.dp)) {
-                            Text("فتح إعدادات التشغيل", color = colors.primary, fontWeight = FontWeight.SemiBold)
-                        }
+                Column(Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+                    .background(colors.accent.copy(alpha = .09f), RoundedCornerShape(16.dp)).padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("التشغيل التلقائي بعد إعادة تشغيل الهاتف", color = colors.text, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                    Text(if (hasLaunchSettings)
+                        "افتح إعدادات التشغيل لهذا التطبيق. إذا وُجدت الإدارة التلقائية فأوقفها، ثم اسمح بالتشغيل التلقائي والتشغيل الثانوي والعمل في الخلفية حسب الخيارات المتاحة."
+                    else
+                        "من إعدادات التطبيق، اسمح بالعمل في الخلفية واختر بطارية دون قيود. إن وُجد خيار التشغيل التلقائي ففعّله، وأوقف الإدارة التلقائية إن كانت تمنع التشغيل. تختلف أسماء الخيارات حسب الهاتف.",
+                        color = colors.textMuted, fontSize = 12.sp, lineHeight = 21.sp)
+                    Text("لا يتيح الهاتف للتطبيق التحقق من حالة هذه الخيارات؛ راجعها يدوياً عند الحاجة.",
+                        color = colors.textMuted, fontSize = 12.sp, lineHeight = 21.sp)
+                    TextButton(onClick = onLaunchSettings, contentPadding = PaddingValues(0.dp)) {
+                        Text(if (hasLaunchSettings) "فتح إعدادات التشغيل" else "فتح إعدادات التطبيق", color = colors.primary, fontWeight = FontWeight.SemiBold)
                     }
                 }
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
