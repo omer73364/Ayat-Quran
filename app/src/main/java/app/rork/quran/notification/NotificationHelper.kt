@@ -3,6 +3,7 @@ package app.rork.quran.notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import app.rork.quran.MainActivity
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
@@ -23,8 +24,6 @@ class NotificationHelper @Inject constructor(
 
         // Action for the "✔ قرأت" button — handled silently in background
         const val ACTION_READ = "app.rork.quran.ACTION_READ"
-        // Action for tapping the notification body — marks as read then opens app
-        const val ACTION_TAP = "app.rork.quran.ACTION_TAP"
 
         const val EXTRA_AYAH_ID = "ayah_id"
         const val EXTRA_NOTIFICATION_ID = "notification_id"
@@ -46,17 +45,16 @@ class NotificationHelper @Inject constructor(
         notificationManager.createNotificationChannel(channel)
     }
 
-    fun showAyahNotification(ayah: Ayah, notificationId: Int) {
-        // Tapping the notification body → receiver marks as read AND opens the app
-        val tapIntent = Intent(context, NotificationReceiver::class.java).apply {
-            action = ACTION_TAP
+    fun showAyahNotification(ayah: Ayah, notificationId: Int, isTest: Boolean = false): Boolean {
+        if (!androidx.core.app.NotificationManagerCompat.from(context).areNotificationsEnabled()) return false
+        if (notificationManager.getNotificationChannel(CHANNEL_ID)?.importance == NotificationManager.IMPORTANCE_NONE) return false
+        // Activity pending intents work on Android 12+ without a notification trampoline.
+        val tapIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra(EXTRA_AYAH_ID, ayah.id)
-            putExtra(EXTRA_NOTIFICATION_ID, notificationId)
         }
-        val tapPendingIntent = PendingIntent.getBroadcast(
-            context,
-            notificationId + 20_000,
-            tapIntent,
+        val tapPendingIntent = PendingIntent.getActivity(
+            context, notificationId + 20_000, tapIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
 
@@ -75,19 +73,23 @@ class NotificationHelper @Inject constructor(
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("📖 تذكير بالقرآن")
+            .setContentTitle(if (isTest) "إشعار تجريبي" else "📖 تذكير بالقرآن")
             .setContentText(ayah.textArabic)
             .setStyle(NotificationCompat.BigTextStyle().bigText(ayah.textArabic))
             .setSubText("سورة ${ayah.surahNameArabic} — آية ${ayah.ayahNumber}")
             .setContentIntent(tapPendingIntent)
-            // Sticky: stays visible until user taps "✔ قرأت" or the body
-            .setAutoCancel(false)
-            .setOngoing(true)
+            .setAutoCancel(true)
+            .setOngoing(!isTest)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .addAction(R.drawable.ic_check, "✔ قرأت", readPendingIntent)
+            .apply { if (!isTest && (context.getSystemService(Context.USER_SERVICE) as android.os.UserManager).isUserUnlocked) addAction(R.drawable.ic_check, "✔ قرأت", readPendingIntent) }
             .build()
 
-        notificationManager.notify(notificationId, notification)
+        return try {
+            notificationManager.notify(notificationId, notification)
+            true
+        } catch (_: SecurityException) {
+            false
+        }
     }
 
     fun dismissNotification(notificationId: Int) {

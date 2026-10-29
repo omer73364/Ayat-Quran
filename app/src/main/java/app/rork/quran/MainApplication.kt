@@ -1,25 +1,23 @@
 package app.rork.quran
 
 import android.app.Application
+import android.os.UserManager
+import androidx.work.Configuration
 import app.rork.quran.notification.NotificationHelper
+import app.rork.quran.notification.ReminderRecoveryWorker
 import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltAndroidApp
-class MainApplication : Application() {
-
-    @Inject lateinit var notificationHelper: NotificationHelper
-    @Inject lateinit var ayahRepository: app.rork.quran.data.repository.AyahRepository
-
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+class MainApplication : Application(), Configuration.Provider {
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder().build()
 
     override fun onCreate() {
         super.onCreate()
-        notificationHelper.createChannel()
-        scope.launch { ayahRepository.ensureSeeded() }
+        NotificationHelper(this).createChannel()
+        // Direct Boot receivers must be able to start the process while private storage is locked.
+        if ((getSystemService(USER_SERVICE) as UserManager).isUserUnlocked) {
+            ReminderRecoveryWorker.ensurePeriodicRecovery(this)
+        }
     }
 }
