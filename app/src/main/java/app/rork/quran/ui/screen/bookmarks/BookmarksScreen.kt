@@ -1,6 +1,9 @@
 package app.rork.quran.ui.screen.bookmarks
 
 import android.content.Intent
+import androidx.compose.foundation.border
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +29,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import app.rork.quran.domain.model.searchKey
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -48,6 +55,13 @@ fun BookmarksScreen(
     viewModel: BookmarksViewModel = hiltViewModel(),
 ) {
     val bookmarks by viewModel.bookmarkedAyahs.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
+    var query by rememberSaveable { mutableStateOf("") }
+    val filtered = bookmarks.filter {
+        val key = query.searchKey()
+        it.surahNameArabic.searchKey().contains(key) ||
+            it.textArabic.searchKey().contains(key)
+    }.sortedWith(compareBy<Ayah> { it.surahNumber }.thenBy { it.ayahNumber })
     val colors = LocalQuranColors.current
 
     Surface(modifier = Modifier.fillMaxSize(), color = colors.background) {
@@ -100,8 +114,35 @@ fun BookmarksScreen(
 
             Spacer(Modifier.height(8.dp))
 
+            androidx.compose.runtime.CompositionLocalProvider(
+                androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Rtl,
+            ) {
+                androidx.compose.material3.TextField(
+                    value = query, onValueChange = { query = it }, singleLine = true,
+                    placeholder = { Text("ابحث في محفوظاتك", fontSize = 14.sp) },
+                    leadingIcon = { Icon(Icons.Default.Search, null, tint = colors.primary, modifier = Modifier.size(22.dp)) },
+                    trailingIcon = {
+                        if (query.isNotEmpty()) IconButton(onClick = { query = "" }) {
+                            Icon(Icons.Default.Close, "مسح البحث", tint = colors.textMuted)
+                        }
+                    },
+                    shape = RoundedCornerShape(18.dp),
+                    colors = androidx.compose.material3.TextFieldDefaults.colors(
+                        focusedContainerColor = colors.card, unfocusedContainerColor = colors.card,
+                        focusedTextColor = colors.text, unfocusedTextColor = colors.text,
+                        focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                        unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                        cursorColor = colors.primary, focusedPlaceholderColor = colors.textMuted,
+                        unfocusedPlaceholderColor = colors.textMuted,
+                    ),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 10.dp)
+                        .border(1.dp, colors.border, RoundedCornerShape(18.dp)),
+                )
+            }
             if (bookmarks.isEmpty()) {
                 EmptyBookmarksState(colors)
+            } else if (filtered.isEmpty()) {
+                Text("لا توجد نتائج مطابقة", color = colors.textMuted, modifier = Modifier.padding(24.dp))
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -111,11 +152,18 @@ fun BookmarksScreen(
                     ),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    items(bookmarks, key = { it.id }) { ayah ->
-                        BookmarkItem(
-                            ayah     = ayah,
-                            onRemove = { viewModel.removeBookmark(ayah.id) },
-                        )
+                    filtered.groupBy { it.surahNumber }.forEach { (surah, ayahs) ->
+                        item(key = "surah:$surah") {
+                            Text(ayahs.first().surahNameArabic, color = colors.primary,
+                                fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 8.dp))
+                        }
+                        items(ayahs, key = { it.id }) { ayah ->
+                            BookmarkItem(
+                                ayah = ayah,
+                                fontSize = settings.arabicFontSize,
+                                onRemove = { viewModel.removeBookmark(ayah.id) },
+                            )
+                        }
                     }
                 }
             }
@@ -124,9 +172,11 @@ fun BookmarksScreen(
 }
 
 @Composable
-private fun BookmarkItem(ayah: Ayah, onRemove: () -> Unit) {
+private fun BookmarkItem(ayah: Ayah, fontSize: Int, onRemove: () -> Unit) {
     val colors = LocalQuranColors.current
     val context = LocalContext.current
+    var focused by androidx.compose.runtime.remember(ayah.id) { mutableStateOf(false) }
+    if (focused) app.rork.quran.ui.component.ReadingDialog(ayah, fontSize) { focused = false }
 
     Column(
         modifier = Modifier
@@ -164,12 +214,13 @@ private fun BookmarkItem(ayah: Ayah, onRemove: () -> Unit) {
         Text(
             text = ayah.textArabic,
             fontFamily = KfgqpcFont,
-            fontSize = 22.sp,
-            lineHeight = 42.sp,
+            fontSize = fontSize.sp,
+            lineHeight = (fontSize * 1.9f).sp,
             textAlign = TextAlign.Center,
             color = colors.text,
             modifier = Modifier.fillMaxWidth(),
         )
+        TextButton(onClick = { focused = true }) { Text("قراءة بملء الشاشة", color = colors.primary) }
         Spacer(Modifier.height(14.dp))
 
         Row(

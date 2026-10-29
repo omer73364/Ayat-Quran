@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import app.rork.quran.ui.theme.LocalQuranColors
 import androidx.compose.material.icons.filled.Add
 
@@ -63,45 +64,28 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val feedback by viewModel.feedback.collectAsStateWithLifecycle()
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    val status by viewModel.reminderStatus.collectAsStateWithLifecycle()
+    val repairing by viewModel.isRepairing.collectAsStateWithLifecycle()
+    val exactAlarmGranted = status.exactAlarmsAllowed
+    val batteryOptIgnored = status.batteryExempt
+    val backgroundRestricted = status.backgroundRestricted
     val colors = LocalQuranColors.current
 
-    var exactAlarmGranted by remember { mutableStateOf(true) }
-    var batteryOptIgnored by remember { mutableStateOf(true) }
-    var showExactAlarmDialog by remember { mutableStateOf(false) }
     var showBatteryDialog by remember { mutableStateOf(false) }
 
     val notificationPermLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { /* handled silently */ }
+    ) { /* The resumed screen refreshes the permission state. */ }
 
-    // Refresh permission states whenever screen is visible
-    LaunchedEffect(settings.reminderEnabled) {
-        exactAlarmGranted = viewModel.canScheduleExactAlarms()
-        batteryOptIgnored = viewModel.isBatteryOptimizationIgnored()
-    }
-
-    if (showExactAlarmDialog) {
-        AlertDialog(
-            onDismissRequest = { showExactAlarmDialog = false },
-            title = { Text("إذن التنبيهات الدقيقة") },
-            text = {
-                Text(
-                    "يحتاج التطبيق إذن \"التنبيهات والتذكيرات\" لإرسال الإشعارات في الوقت المحدد بدقة.\n\nافتح الإعدادات وفعّل الإذن، ثم عد وفعّل التذكير.",
-                    lineHeight = 22.sp,
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    showExactAlarmDialog = false
-                    viewModel.openExactAlarmSettings()
-                }) { Text("فتح الإعدادات", color = colors.primary) }
-            },
-            dismissButton = {
-                TextButton(onClick = { showExactAlarmDialog = false }) {
-                    Text("إلغاء", color = colors.textMuted)
-                }
-            },
-        )
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.RESUMED) {
+            while (true) {
+                viewModel.refreshReminderStatus()
+                kotlinx.coroutines.delay(3_000)
+            }
+        }
     }
 
     if (showBatteryDialog) {
@@ -110,20 +94,19 @@ fun SettingsScreen(
             title = { Text("تحسين البطارية") },
             text = {
                 Text(
-                    "لضمان وصول الإشعارات حتى عند إغلاق التطبيق، يُنصح بإلغاء تقييد البطارية لهذا التطبيق.",
+                    "قد يساعد إلغاء تقييد البطارية على وصول التذكيرات. الإيقاف الإجباري يمنعها حتى تفتح التطبيق مجدداً.",
                     lineHeight = 22.sp,
                 )
             },
             confirmButton = {
                 TextButton(onClick = {
                     showBatteryDialog = false
-                    viewModel.openBatteryOptimizationSettings()
+                    if (backgroundRestricted) viewModel.openAppSettings() else viewModel.openBatteryOptimizationSettings()
                 }) { Text("فتح الإعدادات", color = colors.primary) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     showBatteryDialog = false
-                    viewModel.update(settings.copy(reminderEnabled = true))
                 }) { Text("لاحقاً", color = colors.textMuted) }
             },
         )
@@ -180,7 +163,7 @@ fun SettingsScreen(
                     icon = Icons.Default.Brightness4,
                     label = "الوضع الداكن",
                     checked = settings.darkMode,
-                    onCheckedChange = { viewModel.update(settings.copy(darkMode = it)) },
+                    onCheckedChange = { value -> viewModel.update { it.copy(darkMode = value) } },
                 )
             }
 
@@ -197,19 +180,9 @@ fun SettingsScreen(
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                 notificationPermLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                             }
-                            // Check exact alarm permission first
-                            if (!viewModel.canScheduleExactAlarms()) {
-                                showExactAlarmDialog = true
-                                return@SettingsToggleRow
-                            }
-                            // Then prompt battery optimization
-                            if (!viewModel.isBatteryOptimizationIgnored()) {
-                                showBatteryDialog = true
-                                return@SettingsToggleRow
-                            }
-                            viewModel.update(settings.copy(reminderEnabled = true))
+                            viewModel.update { it.copy(reminderEnabled = true) }
                         } else {
-                            viewModel.update(settings.copy(reminderEnabled = false))
+                            viewModel.update { it.copy(reminderEnabled = false) }
                         }
                     },
                 )
@@ -230,6 +203,9 @@ fun SettingsScreen(
                     )
                 }
 
+                NumberSetting("عدد التذكيرات يومياً", settings.remindersPerDay, 1, 10) { change ->
+                    viewModel.update { it.copy(remindersPerDay = (it.remindersPerDay + change).coerceIn(1, 10)) }
+                }
                 // Time picker (only when enabled)
                 if (settings.reminderEnabled) {
                     TimeRangeSection(
@@ -237,16 +213,31 @@ fun SettingsScreen(
                         fromMinute = settings.reminderFromMinute,
                         toHour = settings.reminderToHour,
                         toMinute = settings.reminderToMinute,
-                        onFromHourChange = { viewModel.update(settings.copy(reminderFromHour = it)) },
-                        onFromMinuteChange = { viewModel.update(settings.copy(reminderFromMinute = it)) },
-                        onToHourChange = { viewModel.update(settings.copy(reminderToHour = it)) },
-                        onToMinuteChange = { viewModel.update(settings.copy(reminderToMinute = it)) },
+                        onFromHourChange = { value -> viewModel.update { it.copy(reminderFromHour = value) } },
+                        onFromMinuteChange = { value -> viewModel.update { it.copy(reminderFromMinute = value) } },
+                        onToHourChange = { value -> viewModel.update { it.copy(reminderToHour = value) } },
+                        onToMinuteChange = { value -> viewModel.update { it.copy(reminderToMinute = value) } },
                     )
                 }
             }
 
+            ReminderStatusCard(
+                enabled = settings.reminderEnabled, status = status, repairing = repairing,
+                feedback = feedback, isHonor = viewModel.isHonor,
+                onNotifications = viewModel::openNotificationSettings,
+                onExactAlarms = viewModel::openExactAlarmSettings,
+                onBattery = { showBatteryDialog = true },
+                onLaunchSettings = viewModel::openLaunchSettings,
+                onRepair = viewModel::repairReminders, onTest = viewModel::sendTestNotification,
+            )
+
             // ── Reading Section ──────────────────────────────────
             SettingsSection(title = "القراءة") {
+                NumberSetting("حجم خط الآيات", settings.arabicFontSize, 20, 44) { change ->
+                    viewModel.update { it.copy(arabicFontSize = (it.arabicFontSize + change).coerceIn(20, 44)) }
+                }
+                Text("تُحتسب الآية مرة واحدة في اليوم عند الضغط على قرأت", color = colors.textMuted,
+                    modifier = Modifier.padding(16.dp), fontSize = 12.sp)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -270,11 +261,11 @@ fun SettingsScreen(
                     // Stepper
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         StepperButton(icon = Icons.Default.Remove) {
-                            if (settings.dailyGoal > 1) viewModel.update(settings.copy(dailyGoal = settings.dailyGoal - 1))
+                            viewModel.update { it.copy(dailyGoal = (it.dailyGoal - 1).coerceAtLeast(1)) }
                         }
                         Text(settings.dailyGoal.toString(), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = colors.text, modifier = Modifier.padding(horizontal = 4.dp))
                         StepperButton(icon = Icons.Default.Add) {
-                            if (settings.dailyGoal < 50) viewModel.update(settings.copy(dailyGoal = settings.dailyGoal + 1))
+                            viewModel.update { it.copy(dailyGoal = (it.dailyGoal + 1).coerceAtMost(50)) }
                         }
                     }
                 }
@@ -427,5 +418,19 @@ private fun StepperButton(icon: ImageVector, onClick: () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         Icon(icon, contentDescription = null, tint = colors.textMuted, modifier = Modifier.size(12.dp))
+    }
+}
+@Composable
+private fun NumberSetting(label: String, value: Int, minimum: Int, maximum: Int, onChange: (Int) -> Unit) {
+    val colors = LocalQuranColors.current
+    Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(label, color = colors.text, modifier = Modifier.weight(1f))
+        IconButton(onClick = { onChange(-1) }, enabled = value > minimum) {
+            Icon(Icons.Default.Remove, contentDescription = "تقليل $label", tint = colors.primary)
+        }
+        Text(value.toString(), color = colors.text)
+        IconButton(onClick = { onChange(1) }, enabled = value < maximum) {
+            Icon(Icons.Default.Add, contentDescription = "زيادة $label", tint = colors.primary)
+        }
     }
 }

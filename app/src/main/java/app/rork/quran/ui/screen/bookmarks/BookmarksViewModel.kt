@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,8 +18,14 @@ import javax.inject.Inject
 @HiltViewModel
 class BookmarksViewModel @Inject constructor(
     private val statsRepository: StatsRepository,
+    private val settingsRepository: app.rork.quran.data.repository.SettingsRepository,
     private val ayahRepository: AyahRepository,
 ) : ViewModel() {
+
+    val settings = settingsRepository.observeSettings().stateIn(
+        viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5_000),
+        app.rork.quran.domain.model.UserSettings(),
+    )
 
     // Fix 6: Use explicit MutableStateFlow instead of chaining .map{} with suspend calls
     // inside a Flow operator, which caused crashes on rapid navigation.
@@ -29,7 +36,11 @@ class BookmarksViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             statsRepository.observeStats().collectLatest { stats ->
                 val ayahs = stats.bookmarkedIds.mapNotNull { id ->
-                    runCatching { ayahRepository.getAyahById(id) }.getOrNull()
+                    try { ayahRepository.getAyahById(id) }
+                    catch (error: Exception) {
+                        if (error is kotlinx.coroutines.CancellationException) throw error
+                        null
+                    }
                 }
                 _bookmarkedAyahs.value = ayahs
             }
@@ -37,6 +48,6 @@ class BookmarksViewModel @Inject constructor(
     }
 
     fun removeBookmark(ayahId: String) {
-        viewModelScope.launch { statsRepository.toggleBookmark(ayahId) }
+        viewModelScope.launch { statsRepository.removeBookmark(ayahId) }
     }
 }
