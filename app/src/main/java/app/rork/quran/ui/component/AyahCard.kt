@@ -52,10 +52,14 @@ fun AyahCard(
     isBookmarked: Boolean,
     onBookmark: () -> Unit,
     onNext: () -> Unit,
+    fontSize: Int = 28,
     modifier: Modifier = Modifier,
 ) {
     val colors = LocalQuranColors.current
     val context = LocalContext.current
+
+    var focused by remember(ayah.id) { mutableStateOf(false) }
+    if (focused) ReadingDialog(ayah, fontSize) { focused = false }
 
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(ayah.id) { visible = false; visible = true }
@@ -98,12 +102,15 @@ fun AyahCard(
         Text(
             text = ayah.textArabic,
             fontFamily = KfgqpcFont,
-            fontSize = 28.sp,
-            lineHeight = 54.sp,
+            fontSize = fontSize.sp,
+            lineHeight = (fontSize * 1.9f).sp,
             textAlign = TextAlign.Center,
             color = colors.text,
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         )
+        androidx.compose.material3.TextButton(onClick = { focused = true }) {
+            Text("قراءة بملء الشاشة", color = colors.primary)
+        }
         Spacer(Modifier.height(20.dp))
         Box(Modifier.fillMaxWidth().height(1.dp).background(colors.border))
         Spacer(Modifier.height(16.dp))
@@ -122,7 +129,7 @@ fun AyahCard(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("الآية التالية", color = colors.textOnPrimary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text("قرأت • التالية", color = colors.textOnPrimary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.size(8.dp))
                 Icon(Icons.Default.Refresh, null, tint = colors.textOnPrimary, modifier = Modifier.size(16.dp))
             }

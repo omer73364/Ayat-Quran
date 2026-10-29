@@ -20,8 +20,13 @@ object Routes {
 private const val ANIM_DURATION = 350
 
 @Composable
-fun QuranNavGraph() {
+fun QuranNavGraph(requestedAyahId: String? = null, onAyahHandled: () -> Unit = {}) {
     val navController = rememberNavController()
+    androidx.compose.runtime.LaunchedEffect(requestedAyahId) {
+        if (requestedAyahId != null) {
+            navController.popBackStack(Routes.HOME, false)
+        }
+    }
     fun caNavigate(): Boolean {
         return navController.currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED;
     }
@@ -56,6 +61,8 @@ fun QuranNavGraph() {
     ) {
         composable(Routes.HOME) {
             HomeScreen(
+                requestedAyahId = requestedAyahId,
+                onAyahHandled = onAyahHandled,
                 onNavigateToSettings = {
                     if (caNavigate()) {
                         navController.navigate(Routes.SETTINGS) { launchSingleTop = true }

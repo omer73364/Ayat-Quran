@@ -51,28 +51,35 @@ class HomeViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState())
 
+    private var loadJob: kotlinx.coroutines.Job? = null
+
     init {
         loadNextAyah()
     }
 
     fun loadNextAyah(ayahId: String? = null) {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        _currentAyah.value = null
+        loadJob = viewModelScope.launch {
             val ayah = if (ayahId != null) ayahRepository.getAyahById(ayahId)
                        else ayahRepository.getRandomAyah()
             _currentAyah.value = ayah
         }
     }
 
-    fun markAsRead() {
-        viewModelScope.launch { statsRepository.markAsRead() }
-    }
+    private var advancing = false
 
-    fun loadNextAndMarkRead(ayahId: String? = null) {
-        viewModelScope.launch {
-            statsRepository.markAsRead()
-            val next = if (ayahId != null) ayahRepository.getAyahById(ayahId)
-                       else ayahRepository.getRandomAyah()
-            _currentAyah.value = next
+    fun loadNextAndMarkRead(expectedAyahId: String) {
+        val ayah = _currentAyah.value ?: return
+        if (advancing || ayah.id != expectedAyahId) return
+        advancing = true
+        loadJob = viewModelScope.launch {
+            try {
+                statsRepository.markAsRead("${LocalDate.now()}:${ayah.id}")
+                _currentAyah.value = ayahRepository.getRandomAyah()
+            } finally {
+                advancing = false
+            }
         }
     }
 

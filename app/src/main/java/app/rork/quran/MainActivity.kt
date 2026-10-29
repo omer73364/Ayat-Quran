@@ -24,11 +24,21 @@ class MainActivity : ComponentActivity() {
 
     @Inject lateinit var settingsRepository: SettingsRepository
 
+    private val requestedAyah = kotlinx.coroutines.flow.MutableStateFlow<String?>(null)
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        requestedAyah.value = intent.getStringExtra(app.rork.quran.notification.NotificationHelper.EXTRA_AYAH_ID)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // Must be called BEFORE super.onCreate()
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        app.rork.quran.notification.ReminderRecoveryWorker.recoverNow(this)
+        requestedAyah.value = intent.getStringExtra(app.rork.quran.notification.NotificationHelper.EXTRA_AYAH_ID)
 
         val settingsFlow = settingsRepository.observeSettings()
             .stateIn(lifecycleScope, SharingStarted.Eagerly, UserSettings())
@@ -44,7 +54,11 @@ class MainActivity : ComponentActivity() {
             }
 
             QuranTheme(darkTheme = isDark) {
-                QuranNavGraph()
+                val ayahId by requestedAyah.collectAsState()
+                QuranNavGraph(ayahId) {
+                    requestedAyah.value = null
+                    intent.removeExtra(app.rork.quran.notification.NotificationHelper.EXTRA_AYAH_ID)
+                }
             }
         }
     }

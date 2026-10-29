@@ -52,9 +52,17 @@ import kotlinx.coroutines.delay
 fun HomeScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToBookmarks: () -> Unit,
+    requestedAyahId: String? = null,
+    onAyahHandled: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(requestedAyahId) {
+        if (requestedAyahId != null) {
+            viewModel.loadNextAyah(requestedAyahId)
+            onAyahHandled()
+        }
+    }
     val colors = LocalQuranColors.current
 
     var headerVisible by remember { mutableStateOf(false) }
@@ -183,7 +191,8 @@ fun HomeScreen(
                     ayah        = ayah,
                     isBookmarked = state.stats.bookmarkedIds.contains(ayah.id),
                     onBookmark  = { viewModel.toggleBookmark(ayah.id) },
-                    onNext      = { viewModel.loadNextAndMarkRead() },
+                    fontSize = state.settings.arabicFontSize,
+                    onNext      = { viewModel.loadNextAndMarkRead(ayah.id) },
                 )
             }
 
