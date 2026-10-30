@@ -84,14 +84,9 @@ Ayat-Quran/
 └── 📄 README.md
 ```
 
-## 🙏 Credits
-
-- 📖 Quran text & data: [source name]
-- ❤️ Thanks to everyone who supported this project
-
 ## 📄 License
 
-Distributed under the **[MIT]** License. See [`LICENSE`](LICENSE) for details.
+Distributed under the **[MIT]** License.
 
 <div align="center">
 
