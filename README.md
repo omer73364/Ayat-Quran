@@ -8,7 +8,7 @@
 ![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
 ![Material You](https://img.shields.io/badge/Material%20Design-757575?style=for-the-badge&logo=materialdesign&logoColor=white)
 
-[🌐 Website](https://ayat-quran.goodash35.chatgpt.site) · [📲 Download APK](#-download) · [📸 Screenshots](#-screenshots) · [✨ Features](#-features)
+[🌐 Website](https://omer73364.github.io/Ayat-Quran) · [📲 Download APK](#-download) · [📸 Screenshots](#-screenshots) · [✨ Features](#-features)
 
 </div>
 
@@ -49,7 +49,7 @@
 
 <div align="center">
 
-[![Download APK](https://img.shields.io/badge/Download-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ayat-quran.goodash35.chatgpt.site/assets/Ayat-Quran-v1.1.1.apk)
+[![Download APK](https://img.shields.io/badge/Download-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/omer73364/Ayat-Quran/releases/download/v1.1.1/Ayat-Quran-v1.1.1.apk)
 
 _Requires Android 8.0 or higher_
 
