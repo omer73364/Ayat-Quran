@@ -42,12 +42,12 @@ It also sends you a **verse of the Quran as a notification** during your busy da
 
 <div align="center">
 
-<img src="docs/screenshots/notification.jpg" width="200" alt="Verse notification with a 'Read' button" />
-<img src="docs/screenshots/settings.jpg" width="200" alt="Reminder settings: daily count and time window" />
 <img src="docs/screenshots/home.png" width="200" alt="Home and daily reading progress" />
 <img src="docs/screenshots/saved.png" width="200" alt="Saved verses and search" />
 <img src="docs/screenshots/reminders.png" width="200" alt="Reminder status and settings" />
 <img src="docs/screenshots/reader.png" width="200" alt="Full-screen reader" />
+<img src="docs/screenshots/settings.jpg" width="200" alt="Reminder settings: daily count and time window" />  
+<img src="docs/screenshots/notification.jpg" width="200" alt="Verse notification with a 'Read' button" />
 
 </div>
 
