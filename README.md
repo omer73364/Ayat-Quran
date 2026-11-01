@@ -18,19 +18,23 @@
 
 **Ayat Quran** is a simple and elegant Android app that lets you read the Holy Quran anytime, anywhere, with a clean design and a smooth experience.
 
+It also sends you a **verse of the Quran as a notification** during your busy day, so you can pause for a moment with the words of Allah without even opening the app.
+
 > 💚 Made with love, to bring the Quran closer to everyone.
 
 ## ✨ Features
 
-|     | Feature             | Description                       |
-| --- | ------------------- | --------------------------------- |
-| 📚  | **Complete Quran**  | All 114 surahs, every ayah        |
-| 🔍  | **Quick Search**    | Find any verse in seconds         |
-| 🔖  | **Bookmarks**       | Save your place and favorite ayat |
-| 🌗  | **Dark Mode**       | Comfortable reading day or night  |
-| 🔠  | **Adjustable Text** | Change the font size to suit you  |
-| 📴  | **Works Offline**   | No internet needed                |
-| ⚡  | **Light & Fast**    | Small size, smooth performance    |
+|     | Feature                | Description                                                  |
+| --- | ---------------------- | ------------------------------------------------------------ |
+| 🔔  | **Daily Reminders**    | Get a verse as a notification, right in the middle of your day |
+| ⏱️  | **Custom Schedule**    | Choose how many reminders per day and the time window (from – to) |
+| 📚  | **Complete Quran**     | All 114 surahs, every ayah                                   |
+| 🔍  | **Quick Search**       | Find any verse in seconds                                    |
+| 🔖  | **Bookmarks**          | Save your place and favorite ayat                            |
+| 🌗  | **Dark Mode**          | Comfortable reading day or night                             |
+| 🔠  | **Adjustable Text**    | Change the font size to suit you                             |
+| 📴  | **Works Offline**      | No internet needed                                           |
+| ⚡  | **Light & Fast**       | Small size, smooth performance                               |
 
 <!-- Edit this list so it matches your app's real features -->
 
@@ -38,6 +42,8 @@
 
 <div align="center">
 
+<img src="docs/screenshots/notification.jpg" width="200" alt="Verse notification with a 'Read' button" />
+<img src="docs/screenshots/settings.jpg" width="200" alt="Reminder settings: daily count and time window" />
 <img src="docs/screenshots/home.png" width="200" alt="Home and daily reading progress" />
 <img src="docs/screenshots/saved.png" width="200" alt="Saved verses and search" />
 <img src="docs/screenshots/reminders.png" width="200" alt="Reminder status and settings" />
