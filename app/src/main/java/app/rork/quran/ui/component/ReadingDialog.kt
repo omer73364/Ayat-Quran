@@ -18,8 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
@@ -37,18 +35,38 @@ import app.rork.quran.ui.theme.LocalQuranColors
 fun ReadingDialog(ayah: Ayah, fontSize: Int, onDismiss: () -> Unit) {
     val colors = LocalQuranColors.current
     val context = LocalContext.current
-    val hostView = LocalView.current
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
-    val bars = androidx.core.view.ViewCompat.getRootWindowInsets(hostView)
-        ?.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
-    val heightPixels = hostView.rootView.height.takeIf { it > 0 }
-        ?: (configuration.screenHeightDp * density.density).toInt()
-    val readingHeight = with(density) { (heightPixels - (bars?.top ?: 0) - (bars?.bottom ?: 0)).coerceAtLeast(400).toDp() }
     var readingSize by rememberSaveable(ayah.id, fontSize) { mutableStateOf(fontSize) }
-    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(
+        usePlatformDefaultWidth = false, decorFitsSystemWindows = false,
+    )) {
+        val dialogView = LocalView.current
+        SideEffect {
+            val window = (dialogView.parent as androidx.compose.ui.window.DialogWindowProvider).window
+            window.addFlags(android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS or
+                android.view.WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
+            window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            if (android.os.Build.VERSION.SDK_INT >= 30) {
+                window.attributes = window.attributes.apply {
+                    setFitInsetsTypes(0)
+                    layoutInDisplayCutoutMode = android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                }
+            }
+            window.setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT)
+            window.setDimAmount(0f)
+            window.statusBarColor = android.graphics.Color.TRANSPARENT
+            window.navigationBarColor = android.graphics.Color.TRANSPARENT
+            if (android.os.Build.VERSION.SDK_INT >= 29) {
+                window.isNavigationBarContrastEnforced = false
+                window.isStatusBarContrastEnforced = false
+            }
+            androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+            androidx.core.view.WindowInsetsControllerCompat(window, dialogView).apply {
+                isAppearanceLightStatusBars = !colors.isDark
+                isAppearanceLightNavigationBars = !colors.isDark
+            }
+        }
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Surface(Modifier.fillMaxWidth().height(readingHeight), color = colors.background) {
+            Surface(Modifier.fillMaxSize(), color = colors.background) {
                 Column(Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = 20.dp, vertical = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(18.dp)) {
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -56,8 +74,8 @@ fun ReadingDialog(ayah: Ayah, fontSize: Int, onDismiss: () -> Unit) {
                             Icon(Icons.Default.Close, "إغلاق القراءة", tint = colors.text)
                         }
                         Column(Modifier.weight(1f)) {
-                            Text("تدبّر آية", color = colors.text, fontWeight = FontWeight.Bold, fontSize = 19.sp)
-                            Text("لحظة هدوء مع كلام الله", color = colors.textMuted, fontSize = 12.sp)
+                            Text("الآية وتفسيرها", color = colors.text, fontWeight = FontWeight.Bold, fontSize = 19.sp)
+                            Text("التفسير الميسر", color = colors.textMuted, fontSize = 12.sp)
                         }
                         IconButton(onClick = {
                             context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
@@ -87,8 +105,11 @@ fun ReadingDialog(ayah: Ayah, fontSize: Int, onDismiss: () -> Unit) {
                                 lineHeight = (readingSize * 1.9f).sp, textAlign = TextAlign.Center, color = colors.text,
                                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
                         }
-                        Text("الآية ${ayah.ayahNumber}", color = colors.primary, fontSize = 13.sp,
+                        Text("الآية ${ayah.ayahNumber}", color = colors.primary, fontSize = 14.sp,
                             modifier = Modifier.background(colors.primary.copy(alpha = .07f), RoundedCornerShape(50)).padding(horizontal = 18.dp, vertical = 8.dp))
+                        Box(Modifier.fillMaxWidth().height(1.dp).background(colors.border))
+                        TafseerSection(ayah)
+
                     }
                     Row(Modifier.fillMaxWidth().background(colors.card, RoundedCornerShape(18.dp)).padding(horizontal = 14.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically) {

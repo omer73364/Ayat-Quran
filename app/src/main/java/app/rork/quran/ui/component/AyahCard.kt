@@ -58,6 +58,7 @@ fun AyahCard(
     val colors = LocalQuranColors.current
     val context = LocalContext.current
 
+    var showTafseer by remember(ayah.id) { mutableStateOf(false) }
     var focused by remember(ayah.id) { mutableStateOf(false) }
     if (focused) ReadingDialog(ayah, fontSize) { focused = false }
 
@@ -108,9 +109,15 @@ fun AyahCard(
             color = colors.text,
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         )
-        androidx.compose.material3.TextButton(onClick = { focused = true }) {
-            Text("قراءة بملء الشاشة", color = colors.primary)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            androidx.compose.material3.TextButton(onClick = { showTafseer = !showTafseer }) {
+                Text(if (showTafseer) "إخفاء التفسير" else "التفسير", color = colors.primary)
+            }
+            androidx.compose.material3.TextButton(onClick = { focused = true }) {
+                Text("ملء الشاشة", color = colors.primary)
+            }
         }
+        if (showTafseer) TafseerSection(ayah)
         Spacer(Modifier.height(20.dp))
         Box(Modifier.fillMaxWidth().height(1.dp).background(colors.border))
         Spacer(Modifier.height(16.dp))

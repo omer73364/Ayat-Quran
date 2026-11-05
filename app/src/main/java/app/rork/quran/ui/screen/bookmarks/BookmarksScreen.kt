@@ -175,6 +175,7 @@ fun BookmarksScreen(
 private fun BookmarkItem(ayah: Ayah, fontSize: Int, onRemove: () -> Unit) {
     val colors = LocalQuranColors.current
     val context = LocalContext.current
+    var showTafseer by androidx.compose.runtime.remember(ayah.id) { mutableStateOf(false) }
     var focused by androidx.compose.runtime.remember(ayah.id) { mutableStateOf(false) }
     if (focused) app.rork.quran.ui.component.ReadingDialog(ayah, fontSize) { focused = false }
 
@@ -220,7 +221,13 @@ private fun BookmarkItem(ayah: Ayah, fontSize: Int, onRemove: () -> Unit) {
             color = colors.text,
             modifier = Modifier.fillMaxWidth(),
         )
-        TextButton(onClick = { focused = true }) { Text("قراءة بملء الشاشة", color = colors.primary) }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            TextButton(onClick = { showTafseer = !showTafseer }) {
+                Text(if (showTafseer) "إخفاء التفسير" else "التفسير", color = colors.primary)
+            }
+            TextButton(onClick = { focused = true }) { Text("ملء الشاشة", color = colors.primary) }
+        }
+        if (showTafseer) app.rork.quran.ui.component.TafseerSection(ayah)
         Spacer(Modifier.height(14.dp))
 
         Row(
