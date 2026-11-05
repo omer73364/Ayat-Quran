@@ -1,33 +1,46 @@
-# Reading ayahs in context
+# Short ayahs with their linked context
 
-Selection now uses passages, rather than isolated randomly selected ayahs. Opening any ayah within a passage opens that same complete range. Each ayah retains its number and original text.
+All 6,236 ayahs remain available. Opening an ayah displays its source-derived context group, which is usually one ayah, sometimes two to five, and occasionally longer when the source links more verses. The app adds no separate “full context” button and never applies a fixed five-ayah cut.
 
-## Boundary source
+## Source and derivation
 
-The baseline is Tanzil's existing rukūʿ section metadata, version 1.0. Attribution: **Tanzil Project, © 2008–2009 Tanzil.info**; the metadata declares the **CC-BY** license.
+Boundaries are derived from **Quran Semantic Units (QSU), version 1**, published 22 June 2026 by **Abdelraouf Abdelmonem Hawash, Tamer Medhat, Mahmoud Shams, and Nora Mahmoud**.
 
-- [Metadata documentation](https://tanzil.net/docs/Quran_Metadata)
-- [Original XML](https://tanzil.net/res/text/metadata/quran-data.xml)
+- [Dataset and methodology](https://data.mendeley.com/datasets/v7hyhk7krd/1)
+- DOI: [10.17632/v7hyhk7krd.1](https://doi.org/10.17632/v7hyhk7krd.1)
+- License: [CC BY-NC 3.0](https://creativecommons.org/licenses/by-nc/3.0/). The derived boundary data retains this noncommercial license; code licensing is separate. Attribution and the full license text are bundled in the APK and linked in Settings.
 
-The app derives `assets/passages.json` from those section starts and surah lengths. As an app policy, surahs containing 12 ayahs or fewer are kept in full. These are documented baseline context sections, **not a claim of scholarly review or guaranteed semantic independence**. No AI-generated boundaries are used.
+The source annotates word-level units using stopping/resuming conventions. The app displays full ayahs. Consequently, whenever any source unit crosses an ayah boundary, those ayahs are joined. If different source units connect different parts of the same ayah to its neighbors, the entire connected group is retained. This avoids breaking a source unit when expanding it to whole ayahs. The existing bundled Quran text is unchanged; QSU contributes boundaries only.
 
-The result is 552 non-overlapping passages covering all 6,236 ayahs exactly once. For example, selecting any ayah of Al-Ma'un shows the full surah, 107:1–7, including the description following 107:4.
+The adaptation produces **4,567 non-overlapping groups**:
 
-To regenerate, download the original XML and run:
+| Ayahs per group | Groups |
+| --- | ---: |
+| 1 | 3,636 |
+| 2–5 | 885 |
+| More than 5 | 46 |
+
+Examples: Al-Fatihah has groups 1:1, 1:2–4, 1:5, and 1:6–7. Al-Ma'un has 107:1, 107:2–3, and 107:4–7. An-Nas stays 114:1–6. The 46 longer groups are retained by explicit product decision; see [the exception report](short-context-feasibility.md).
+
+This is a reproducible adaptation of the source annotations, not a new scholarly review or a guarantee that each passage can be interpreted without further context.
+
+## Regeneration and validation
+
+Download `QSU.csv` from the dataset's version-1 files, then run:
 
 ```sh
-python3 tools/generate_passages.py /path/to/quran-data.xml
+python3 tools/generate_passages.py /path/to/QSU.csv
+python3 tools/analyze_semantic_units.py /path/to/QSU.csv
+python3 -m unittest discover -s tools -p test_qsu_boundaries.py
 ```
 
-The generator checks complete coverage against the app's Quran text. Future reviewed boundary changes should retain their source and reviewer information and pass the same coverage checks.
+The generator pins the published source SHA-256, requires annotations for every bundled ayah, checks locations and source indices, and verifies that the derived ranges cover every ayah exactly once. It preserves cross-ayah links without truncation. No AI-generated semantic boundaries or short-surah overrides are used.
 
 ## App behavior and compatibility
 
-- Home, saved passages, full-screen reading, sharing, and widget references show the passage's range.
-- Tafseer is fetched and cached for **every ayah** in the passage, with verse headings and at most three concurrent requests.
-- Reminders choose whole passages of at most 12 ayahs and 1,200 characters. They never split a longer section to fit. Old scheduled payloads are resolved through the new catalog, including before unlock; an oversized legacy selection is replaced with a deterministic short passage.
-- The widget explicitly labels its text as a preview and opens the full passage. Cached legacy verse IDs resolve to their full passage.
-- Old bookmarks remain usable. Multiple saved ayahs within one passage appear once; removing the passage removes all its saved constituent IDs.
-- Reading counts each constituent ayah once per day, including when the same passage is read from both a reminder and the app. Existing reading history is retained.
-
-Tests check full coverage, contiguous ranges, Al-Ma'un context, reminder size limits, old payloads, grouped serialization, widget display, bookmarks, and reading counts.
+- Home, saved passages, full-screen reading, sharing, reminders, and widgets use the same boundaries and references.
+- Tafseer is fetched and cached for every ayah in a group, with verse headings and at most three concurrent requests.
+- Every group is eligible for reminders, including longer exceptions. Old scheduled payloads resolve to the group containing their stored ayah ID, including before unlock; a different passage is never substituted because of length.
+- Android may visually clip notification/widget previews. Tapping opens the complete mapped group, with no separate context-expansion action.
+- Existing bookmark IDs remain saved and resolve through the new mapping. Duplicate bookmarks within a current group appear once. Older canonical IDs may now resolve to a smaller group under the finer boundaries.
+- Reading counts each constituent ayah once per day. Existing reading history is retained; a repeated ayah reached through overlapping old history and a current group is not counted again.
