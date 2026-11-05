@@ -1,34 +1,22 @@
 #!/usr/bin/env python3
-"""Derive context ranges from Tanzil metadata (CC-BY), retaining short surahs in full.
+"""Derive whole-ayah context groups from QSU v1 without splitting a semantic unit.
 
-Usage: python3 tools/generate_passages.py /path/to/quran-data.xml
-Source: https://tanzil.net/res/text/metadata/quran-data.xml
+Usage: python3 tools/generate_passages.py /path/to/QSU.csv
+Source: https://doi.org/10.17632/v7hyhk7krd.1 (CC BY-NC 3.0).
 """
 import argparse
+import hashlib
 import json
 from pathlib import Path
-import xml.etree.ElementTree as ET
+from qsu_boundaries import derive_groups, SOURCE_SHA256
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('metadata', type=Path)
+parser.add_argument('csv_file', type=Path)
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
-metadata = ET.parse(args.metadata).getroot()
-starts = [(int(item.attrib['sura']), int(item.attrib['aya'])) for item in metadata.find('rukus')]
-ranges = []
-for surah in metadata.find('suras'):
-    number, count = int(surah.attrib['index']), int(surah.attrib['ayas'])
-    points = [aya for chapter, aya in starts if chapter == number]
-    if count <= 12:
-        points = [1]
-    assert points and points[0] == 1 and points == sorted(set(points))
-    for index, start in enumerate(points):
-        end = points[index + 1] - 1 if index + 1 < len(points) else count
-        assert start <= end <= count
-        ranges.append(dict(surah=number, startAyah=start, endAyah=end))
-covered = [f"{item['surah']}-{aya}" for item in ranges for aya in range(item['startAyah'], item['endAyah'] + 1)]
+if hashlib.sha256(args.csv_file.read_bytes()).hexdigest() != SOURCE_SHA256:
+    raise ValueError('Expected the published QSU.csv version 1; review source changes before importing')
 verses = json.loads((root / 'app/src/main/assets/ayahs.json').read_text())
-assert len(covered) == len(set(covered)) == len(verses)
-assert set(covered) == {item['id'] for item in verses}
-(root / 'app/src/main/assets/passages.json').write_text(json.dumps(ranges, ensure_ascii=False, indent=2) + '\n')
-print(f'{len(ranges)} passages cover all {len(covered)} ayahs exactly once.')
+groups, units = derive_groups(args.csv_file, verses)
+(root / 'app/src/main/assets/passages.json').write_text(json.dumps(groups, ensure_ascii=False, indent=2) + '\n')
+print(f'{len(groups)} passages cover all {len(verses)} ayahs, preserving {units} source units.')

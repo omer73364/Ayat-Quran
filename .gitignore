@@ -34,3 +34,6 @@ captures/
 
 # ── macOS ────────────────────────────────────────────────────
 .DS_Store
+
+# Python boundary-generation tools
+__pycache__/
