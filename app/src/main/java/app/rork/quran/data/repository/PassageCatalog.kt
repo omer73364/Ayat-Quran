@@ -5,9 +5,9 @@ import app.rork.quran.domain.model.Ayah
 import app.rork.quran.domain.model.PassageVerse
 import org.json.JSONArray
 
-/** Tanzil section boundaries, with short surahs retained in full. Available before unlock. */
+/** Whole-ayah groups derived from QSU semantic-unit links. Available before unlock. */
 class PassageCatalog(private val context: Context) {
-    private data class Index(val byVerse: Map<String, Ayah>, val reminders: List<Ayah>)
+    private data class Index(val byVerse: Map<String, Ayah>, val passages: List<Ayah>)
     companion object {
         @Volatile private var cached: Index? = null
     }
@@ -18,16 +18,10 @@ class PassageCatalog(private val context: Context) {
 
     fun resolve(id: String): Ayah = index().byVerse.getValue(id.replace(':', '-'))
 
-    fun reminderPassages(): List<Ayah> = index().reminders
+    fun reminderPassages(): List<Ayah> = index().passages
 
-    fun forReminder(id: String): Ayah {
-        val passage = resolve(id)
-        return if (suitableForReminder(passage)) passage else index().reminders.let {
-            it[Math.floorMod(id.hashCode(), it.size)]
-        }
-    }
-
-    private fun suitableForReminder(ayah: Ayah) = ayah.verseIds.size <= 12 && ayah.textArabic.length <= 1200
+    // Old reminder payloads retain their ayah identity under the current boundaries.
+    fun forReminder(id: String): Ayah = resolve(id)
 
     private fun load(): Index {
         val source = JSONArray(context.assets.open("ayahs.json").bufferedReader().use { it.readText() })
@@ -55,6 +49,6 @@ class PassageCatalog(private val context: Context) {
             passage
         }
         check(byVerse.keys == singles.keys) { "Passage boundaries must cover every ayah exactly once" }
-        return Index(byVerse, passages.filter(::suitableForReminder).also { check(it.isNotEmpty()) })
+        return Index(byVerse, passages.also { check(it.isNotEmpty()) })
     }
 }

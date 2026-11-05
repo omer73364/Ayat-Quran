@@ -4,8 +4,8 @@
     <string name="widget_refresh">عرض مقطع آخر</string>
     <string name="widget_open">معاينة المقطع · اضغط لقراءته كاملًا</string>
     <string name="widget_reference">سورة %1$s · الآية %2$d</string>
-    <string name="widget_default_reference">سورة الفاتحة · الآيات ١–٧</string>
-    <string name="widget_default_verse">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ ﴿1﴾ ٱلۡحَمۡدُ لِلَّهِ رَبِّ ٱلۡعَٰلَمِينَ ﴿2﴾ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ ﴿3﴾ مَٰلِكِ يَوۡمِ ٱلدِّينِ ﴿4﴾ إِيَّاكَ نَعۡبُدُ وَإِيَّاكَ نَسۡتَعِينُ ﴿5﴾ ٱهۡدِنَا ٱلصِّرَٰطَ ٱلۡمُسۡتَقِيمَ ﴿6﴾ صِرَٰطَ ٱلَّذِينَ أَنۡعَمۡتَ عَلَيۡهِمۡ غَيۡرِ ٱلۡمَغۡضُوبِ عَلَيۡهِمۡ وَلَا ٱلضَّآلِّينَ ﴿7﴾</string>
+    <string name="widget_default_reference">سورة الفاتحة · الآية ١</string>
+    <string name="widget_default_verse">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</string>
     <color name="widget_surface">#F7F5EE</color>
     <color name="widget_primary">#176B52</color>
     <color name="widget_text">#243E35</color>
