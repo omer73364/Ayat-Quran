@@ -53,15 +53,21 @@ fun HomeScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToBookmarks: () -> Unit,
     requestedAyahId: String? = null,
+    requestedTafseer: Boolean = false,
     onAyahHandled: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(requestedAyahId) {
+    var readerAyahId by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf<String?>(null) }
+    LaunchedEffect(requestedAyahId, requestedTafseer) {
         if (requestedAyahId != null) {
+            readerAyahId = requestedAyahId.takeIf { requestedTafseer }
             viewModel.loadNextAyah(requestedAyahId)
             onAyahHandled()
         }
+    }
+    state.currentAyah?.takeIf { it.id == readerAyahId }?.let { ayah ->
+        app.rork.quran.ui.component.ReadingDialog(ayah, state.settings.arabicFontSize) { readerAyahId = null }
     }
     val colors = LocalQuranColors.current
 

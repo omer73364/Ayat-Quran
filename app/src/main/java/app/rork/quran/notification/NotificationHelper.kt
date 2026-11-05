@@ -25,6 +25,7 @@ class NotificationHelper @Inject constructor(
         // Action for the "✔ قرأت" button — handled silently in background
         const val ACTION_READ = "app.rork.quran.ACTION_READ"
 
+        const val EXTRA_SHOW_TAFSEER = "show_tafseer"
         const val EXTRA_AYAH_ID = "ayah_id"
         const val EXTRA_NOTIFICATION_ID = "notification_id"
     }
@@ -71,6 +72,16 @@ class NotificationHelper @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
 
+        val tafseerIntent = Intent(tapIntent).apply {
+            action = "app.rork.quran.SHOW_TAFSEER"
+            data = android.net.Uri.parse("ayat://tafseer/${ayah.id}")
+            putExtra(EXTRA_SHOW_TAFSEER, true)
+        }
+        val tafseerPendingIntent = PendingIntent.getActivity(
+            context, notificationId + 30_000, tafseerIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(if (isTest) "إشعار تجريبي" else "📖 تذكير بالقرآن")
@@ -82,6 +93,7 @@ class NotificationHelper @Inject constructor(
             .setOngoing(!isTest)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .apply { if (!isTest && (context.getSystemService(Context.USER_SERVICE) as android.os.UserManager).isUserUnlocked) addAction(R.drawable.ic_check, "✔ قرأت", readPendingIntent) }
+            .addAction(R.drawable.ic_notification, "التفسير", tafseerPendingIntent)
             .build()
 
         return try {

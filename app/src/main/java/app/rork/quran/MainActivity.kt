@@ -24,11 +24,13 @@ class MainActivity : ComponentActivity() {
 
     @Inject lateinit var settingsRepository: SettingsRepository
 
+    private val requestedTafseer = kotlinx.coroutines.flow.MutableStateFlow(false)
     private val requestedAyah = kotlinx.coroutines.flow.MutableStateFlow<String?>(null)
 
     override fun onNewIntent(intent: android.content.Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        requestedTafseer.value = intent.getBooleanExtra(app.rork.quran.notification.NotificationHelper.EXTRA_SHOW_TAFSEER, false)
         requestedAyah.value = intent.getStringExtra(app.rork.quran.notification.NotificationHelper.EXTRA_AYAH_ID)
     }
 
@@ -38,6 +40,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         app.rork.quran.notification.ReminderRecoveryWorker.recoverNow(this)
+        requestedTafseer.value = intent.getBooleanExtra(app.rork.quran.notification.NotificationHelper.EXTRA_SHOW_TAFSEER, false)
         requestedAyah.value = intent.getStringExtra(app.rork.quran.notification.NotificationHelper.EXTRA_AYAH_ID)
 
         val settingsFlow = settingsRepository.observeSettings()
@@ -55,7 +58,10 @@ class MainActivity : ComponentActivity() {
 
             QuranTheme(darkTheme = isDark) {
                 val ayahId by requestedAyah.collectAsState()
-                QuranNavGraph(ayahId) {
+                val showTafseer by requestedTafseer.collectAsState()
+                QuranNavGraph(ayahId, showTafseer) {
+                    requestedTafseer.value = false
+                    intent.removeExtra(app.rork.quran.notification.NotificationHelper.EXTRA_SHOW_TAFSEER)
                     requestedAyah.value = null
                     intent.removeExtra(app.rork.quran.notification.NotificationHelper.EXTRA_AYAH_ID)
                 }

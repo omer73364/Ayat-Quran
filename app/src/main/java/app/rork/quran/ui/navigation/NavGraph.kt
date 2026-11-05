@@ -20,7 +20,7 @@ object Routes {
 private const val ANIM_DURATION = 350
 
 @Composable
-fun QuranNavGraph(requestedAyahId: String? = null, onAyahHandled: () -> Unit = {}) {
+fun QuranNavGraph(requestedAyahId: String? = null, requestedTafseer: Boolean = false, onAyahHandled: () -> Unit = {}) {
     val navController = rememberNavController()
     androidx.compose.runtime.LaunchedEffect(requestedAyahId) {
         if (requestedAyahId != null) {
@@ -62,6 +62,7 @@ fun QuranNavGraph(requestedAyahId: String? = null, onAyahHandled: () -> Unit = {
         composable(Routes.HOME) {
             HomeScreen(
                 requestedAyahId = requestedAyahId,
+                requestedTafseer = requestedTafseer,
                 onAyahHandled = onAyahHandled,
                 onNavigateToSettings = {
                     if (caNavigate()) {
