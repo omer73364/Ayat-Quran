@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -123,7 +124,7 @@ fun AyahCard(
         Spacer(Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
@@ -131,13 +132,18 @@ fun AyahCard(
                     .weight(1f)
                     .clip(CircleShape)
                     .background(colors.primary)
-                    .clickable(onClick = onNext)
-                    .padding(horizontal = 16.dp, vertical = 11.dp),
+                    .clickable(role = androidx.compose.ui.semantics.Role.Button,
+                        onClickLabel = "تسجيل القراءة وعرض المقطع التالي", onClick = onNext)
+                    .heightIn(min = 44.dp)
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("قرأت المقطع • التالي", color = colors.textOnPrimary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                Spacer(Modifier.size(8.dp))
+                Text("قرأت · التالي", color = colors.textOnPrimary, fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
+                Spacer(Modifier.size(6.dp))
                 Icon(Icons.Default.Refresh, null, tint = colors.textOnPrimary, modifier = Modifier.size(16.dp))
             }
             IconButton(
