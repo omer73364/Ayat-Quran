@@ -8,7 +8,7 @@ From the repository root, start a local preview with:
 python3 -m http.server 4173 --bind 127.0.0.1 --directory website
 ```
 
-Open http://127.0.0.1:4173. The download buttons point to the signed v1.1.1 APK in the public GitHub release. Replacing that release asset updates the download without redeploying the website. Screenshots, the app icon, and the Quran font are also bundled locally.
+Open http://127.0.0.1:4173. The download buttons point to the signed v1.2.0 APK in the public GitHub release. Replacing that release asset updates the download without redeploying the website. Screenshots, the app icon, and the Quran font are also bundled locally.
 
 Public website: https://omer73364.github.io/Ayat-Quran/
 

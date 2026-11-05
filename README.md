@@ -49,7 +49,7 @@
 
 <div align="center">
 
-[![Download APK](https://img.shields.io/badge/Download-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/omer73364/Ayat-Quran/releases/download/v1.1.1/Ayat-Quran-v1.1.1.apk)
+[![Download APK](https://img.shields.io/badge/Download-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/omer73364/Ayat-Quran/releases/download/v1.2.0/Ayat-Quran-v1.2.0.apk)
 
 _Requires Android 8.0 or higher_
 
