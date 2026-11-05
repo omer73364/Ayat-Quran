@@ -20,16 +20,17 @@ class AyahWidgetTest {
         val first = -9001
         val second = -9002
         val store = AyahWidgetStore(context)
-        val verse = Ayah("26:32", 26, "الشعراء", 32, "فَأَلْقَىٰ عَصَاهُ")
+        val catalog = app.rork.quran.data.repository.PassageCatalog(context)
+        val verse = Ayah("26-32", 26, "الشعراء", 32, "فَأَلْقَىٰ عَصَاهُ")
         try {
             store.save(first, AyahWidgetStore.fallback)
             store.save(second, verse)
-            assertEquals(AyahWidgetStore.fallback, AyahWidgetStore(context).load(first))
-            assertEquals(verse, AyahWidgetStore(context).load(second))
+            assertEquals(catalog.resolve(AyahWidgetStore.fallback.id), AyahWidgetStore(context).load(first))
+            assertEquals(catalog.resolve(verse.id), AyahWidgetStore(context).load(second))
             assertTrue(store.isCurrent(second))
             store.remove(first)
             assertNull(store.load(first))
-            assertEquals(verse, store.load(second))
+            assertEquals(catalog.resolve(verse.id), store.load(second))
         } finally {
             store.remove(first)
             store.remove(second)
@@ -38,7 +39,7 @@ class AyahWidgetTest {
 
     @Test fun remoteViewsInflateWithTheVerseAndAdaptToWidgetHeight() {
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            val ayah = AyahWidgetStore.fallback
+            val ayah = app.rork.quran.data.repository.PassageCatalog(context).resolve(AyahWidgetStore.fallback.id)
             fun inflate(height: Int) = AyahWidgetProvider.views(context, -9003, ayah, Bundle().apply {
                 putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, height)
             }).apply(context, FrameLayout(context))

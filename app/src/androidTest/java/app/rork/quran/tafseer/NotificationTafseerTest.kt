@@ -32,6 +32,9 @@ class NotificationTafseerTest {
                 Thread.sleep(100)
             }
             val notification = manager.activeNotifications.single { it.id == id }.notification
+            val passage = app.rork.quran.data.repository.PassageCatalog(context).resolve("1-1")
+            assertEquals(passage.textArabic, notification.extras.getCharSequence(android.app.Notification.EXTRA_BIG_TEXT).toString())
+            assertTrue(notification.extras.getCharSequence(android.app.Notification.EXTRA_SUB_TEXT).toString().contains(passage.reference))
             assertTrue(notification.actions.any { it.title.toString().contains("قرأت") })
             val action = notification.actions.single { it.title.toString() == "التفسير" }
             action.actionIntent.send()
@@ -43,7 +46,8 @@ class NotificationTafseerTest {
                 if (node.text?.contains(text) == true) return true
                 return (0 until node.childCount).any { containsText(node.getChild(it), text) }
             }
-            val deadline = android.os.SystemClock.elapsedRealtime() + 30_000
+            // A fresh install seeds the offline Quran before rendering the reader.
+            val deadline = android.os.SystemClock.elapsedRealtime() + 90_000
             while (!containsText(instrumentation.uiAutomation.rootInActiveWindow, "الآية وتفسيرها") &&
                 android.os.SystemClock.elapsedRealtime() < deadline) Thread.sleep(200)
             assertTrue(containsText(instrumentation.uiAutomation.rootInActiveWindow, "الآية وتفسيرها"))
