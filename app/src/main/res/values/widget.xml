@@ -1,0 +1,15 @@
+<resources>
+    <string name="widget_title">آية من القرآن</string>
+    <string name="widget_description">آية على شاشتك الرئيسية، مع تحديث يومي وزر لاختيار آية أخرى.</string>
+    <string name="widget_refresh">عرض آية أخرى</string>
+    <string name="widget_open">اضغط لتدبّر الآية كاملة</string>
+    <string name="widget_reference">سورة %1$s · الآية %2$d</string>
+    <string name="widget_default_reference">سورة الفاتحة · الآية ١</string>
+    <string name="widget_default_verse">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</string>
+    <color name="widget_surface">#F7F5EE</color>
+    <color name="widget_primary">#176B52</color>
+    <color name="widget_text">#243E35</color>
+    <color name="widget_secondary">#66745F</color>
+    <color name="widget_border">#D4DCC8</color>
+    <color name="widget_button">#E3E8DA</color>
+</resources>
