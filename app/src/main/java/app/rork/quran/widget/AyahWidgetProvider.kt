@@ -65,7 +65,8 @@ class AyahWidgetProvider : AppWidgetProvider() {
             manager.updateAppWidget(id, views(context, id, ayah, manager.getAppWidgetOptions(id)))
         }
 
-        internal fun views(context: Context, id: Int, ayah: Ayah, options: Bundle): RemoteViews {
+        internal fun views(context: Context, id: Int, selectedAyah: Ayah, options: Bundle): RemoteViews {
+            val ayah = app.rork.quran.data.repository.PassageCatalog(context).resolve(selectedAyah.id)
             val open = Intent(context, MainActivity::class.java).apply {
                 data = Uri.parse("ayat://widget/$id/verse/${ayah.id}")
                 putExtra(NotificationHelper.EXTRA_AYAH_ID, ayah.id)
@@ -81,7 +82,7 @@ class AyahWidgetProvider : AppWidgetProvider() {
             val lines = ((height - 104) / (28f * context.resources.configuration.fontScale)).toInt().coerceIn(1, 14)
             return RemoteViews(context.packageName, R.layout.widget_ayah).apply {
                 setTextViewText(R.id.widget_verse, ayah.textArabic)
-                setTextViewText(R.id.widget_reference, context.getString(R.string.widget_reference, ayah.surahNameArabic, ayah.ayahNumber))
+                setTextViewText(R.id.widget_reference, "سورة ${ayah.surahNameArabic} · ${ayah.reference}")
                 setInt(R.id.widget_verse, "setMaxLines", lines)
                 setOnClickPendingIntent(R.id.widget_root, PendingIntent.getActivity(context, id, open, immutable))
                 setOnClickPendingIntent(R.id.widget_refresh, PendingIntent.getBroadcast(context, id, refresh, immutable))

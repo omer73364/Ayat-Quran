@@ -5,14 +5,12 @@ import app.rork.quran.domain.model.Ayah
 import java.time.LocalDate
 
 /** Each widget keeps its displayed verse across process death and launcher recreation. */
-internal class AyahWidgetStore(context: Context) {
+internal class AyahWidgetStore(private val context: Context) {
     private val prefs = context.getSharedPreferences("ayah_widgets", Context.MODE_PRIVATE)
 
     fun load(id: Int): Ayah? {
         val verseId = prefs.getString("${id}_id", null) ?: return null
-        return Ayah(verseId, prefs.getInt("${id}_surah", 1),
-            prefs.getString("${id}_name", "") ?: "", prefs.getInt("${id}_number", 1),
-            prefs.getString("${id}_text", "") ?: "")
+        return app.rork.quran.data.repository.PassageCatalog(context).resolve(verseId)
     }
 
     fun isCurrent(id: Int): Boolean = prefs.getString("${id}_date", null) == LocalDate.now().toString()

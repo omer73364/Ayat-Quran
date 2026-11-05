@@ -42,8 +42,8 @@ class NotificationReceiver : BroadcastReceiver() {
                     try {
                         val ayahId = intent.getStringExtra(NotificationHelper.EXTRA_AYAH_ID)
                             ?: return@launch
-                        val date = java.time.LocalDate.now().toString()
-                        statsRepository.markAsRead("$date:$ayahId")
+                        val passage = app.rork.quran.data.repository.PassageCatalog(context).resolve(ayahId)
+                        statsRepository.markPassageRead(passage.verseIds)
                         notificationHelper.dismissNotification(notificationId)
 
                     } catch (error: Exception) {

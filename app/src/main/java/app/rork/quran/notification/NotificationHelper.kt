@@ -46,7 +46,8 @@ class NotificationHelper @Inject constructor(
         notificationManager.createNotificationChannel(channel)
     }
 
-    fun showAyahNotification(ayah: Ayah, notificationId: Int, isTest: Boolean = false): Boolean {
+    fun showAyahNotification(selectedAyah: Ayah, notificationId: Int, isTest: Boolean = false): Boolean {
+        val ayah = app.rork.quran.data.repository.PassageCatalog(context).forReminder(selectedAyah.id)
         if (!androidx.core.app.NotificationManagerCompat.from(context).areNotificationsEnabled()) return false
         if (notificationManager.getNotificationChannel(CHANNEL_ID)?.importance == NotificationManager.IMPORTANCE_NONE) return false
         // Activity pending intents work on Android 12+ without a notification trampoline.
@@ -87,7 +88,7 @@ class NotificationHelper @Inject constructor(
             .setContentTitle(if (isTest) "إشعار تجريبي" else "📖 تذكير بالقرآن")
             .setContentText(ayah.textArabic)
             .setStyle(NotificationCompat.BigTextStyle().bigText(ayah.textArabic))
-            .setSubText("سورة ${ayah.surahNameArabic} — آية ${ayah.ayahNumber}")
+            .setSubText("سورة ${ayah.surahNameArabic} — ${ayah.reference}")
             .setContentIntent(tapPendingIntent)
             .setAutoCancel(true)
             .setOngoing(!isTest)
