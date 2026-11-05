@@ -30,6 +30,6 @@ internal class AyahWidgetStore(context: Context) {
     }
 
     companion object {
-        val fallback = Ayah("1:1", 1, "الفاتحة", 1, "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ")
+        val fallback = Ayah("1-1", 1, "الفاتحة", 1, "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ")
     }
 }
