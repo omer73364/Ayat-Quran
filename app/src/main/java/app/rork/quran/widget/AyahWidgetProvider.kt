@@ -78,12 +78,10 @@ class AyahWidgetProvider : AppWidgetProvider() {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
             }
             val immutable = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            val height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 180)
-            val lines = ((height - 104) / (28f * context.resources.configuration.fontScale)).toInt().coerceIn(1, 14)
             return RemoteViews(context.packageName, R.layout.widget_ayah).apply {
-                setTextViewText(R.id.widget_verse, ayah.textArabic)
+                setImageViewBitmap(R.id.widget_verse, WidgetVerseRenderer.render(context, ayah.textArabic, options))
+                setContentDescription(R.id.widget_verse, ayah.textArabic)
                 setTextViewText(R.id.widget_reference, "سورة ${ayah.surahNameArabic} · ${ayah.reference}")
-                setInt(R.id.widget_verse, "setMaxLines", lines)
                 setOnClickPendingIntent(R.id.widget_root, PendingIntent.getActivity(context, id, open, immutable))
                 setOnClickPendingIntent(R.id.widget_refresh, PendingIntent.getBroadcast(context, id, refresh, immutable))
             }

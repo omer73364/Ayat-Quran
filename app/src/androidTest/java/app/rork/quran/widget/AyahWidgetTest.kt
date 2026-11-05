@@ -45,15 +45,48 @@ class AyahWidgetTest {
             }).apply(context, FrameLayout(context))
             val small = inflate(150)
             val large = inflate(350)
-            val smallVerse = small.findViewById<TextView>(R.id.widget_verse)
-            val largeVerse = large.findViewById<TextView>(R.id.widget_verse)
-            assertEquals(ayah.textArabic, smallVerse.text.toString())
+            val smallVerse = small.findViewById<android.widget.ImageView>(R.id.widget_verse)
+            val largeVerse = large.findViewById<android.widget.ImageView>(R.id.widget_verse)
+            assertEquals(ayah.textArabic, smallVerse.contentDescription.toString())
+            assertNotNull(smallVerse.drawable)
             assertTrue(small.findViewById<TextView>(R.id.widget_reference).text.contains(ayah.surahNameArabic))
-            assertTrue(largeVerse.maxLines > smallVerse.maxLines)
+            assertTrue(largeVerse.drawable.intrinsicHeight > smallVerse.drawable.intrinsicHeight)
+            assertEquals(android.view.Gravity.CENTER, small.findViewById<TextView>(R.id.widget_title).gravity)
             assertTrue(small.findViewById<android.view.View>(R.id.widget_refresh).hasOnClickListeners())
             assertTrue(small.hasOnClickListeners())
+            if (InstrumentationRegistry.getArguments().getString("captureWidget") == "true") {
+                val density = context.resources.displayMetrics.density
+                val width = (250 * density).toInt()
+                val height = (350 * density).toInt()
+                large.measure(android.view.View.MeasureSpec.makeMeasureSpec(width, android.view.View.MeasureSpec.EXACTLY),
+                    android.view.View.MeasureSpec.makeMeasureSpec(height, android.view.View.MeasureSpec.EXACTLY))
+                large.layout(0, 0, width, height)
+                val bitmap = android.graphics.Bitmap.createBitmap(width, height, android.graphics.Bitmap.Config.ARGB_8888)
+                large.draw(android.graphics.Canvas(bitmap))
+                java.io.File(context.cacheDir, "widget-preview.png").outputStream().use {
+                    bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
+                }
+                bitmap.recycle()
+            }
         }
     }
+    @Test fun verseImagesStayBoundedAtExtremeWidgetSizesAndRetainInk() {
+        val text = app.rork.quran.data.repository.PassageCatalog(context).resolve("107-4").textArabic
+        listOf(150, 2000).forEach { size ->
+            val image = WidgetVerseRenderer.render(context, text, Bundle().apply {
+                putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, size)
+                putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, size)
+                putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, size)
+                putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, size)
+            })
+            assertTrue(image.byteCount <= 2 * 1024 * 1024)
+            val pixels = IntArray(image.width * image.height)
+            image.getPixels(pixels, 0, image.width, 0, 0, image.width, image.height)
+            assertTrue(pixels.any { android.graphics.Color.alpha(it) > 0 })
+            image.recycle()
+        }
+    }
+
     @Test
     @androidx.test.filters.SdkSuppress(minSdkVersion = 29)
     fun boundWidgetLoadsRefreshesAndOpensItsOwnVerse() {
