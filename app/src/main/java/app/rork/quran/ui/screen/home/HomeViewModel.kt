@@ -44,7 +44,8 @@ class HomeViewModel @Inject constructor(
     ) { ayah, stats, settings ->
         HomeUiState(
             currentAyah    = ayah,
-            stats          = stats,
+            stats          = if (ayah == null) stats else stats.copy(bookmarkedIds =
+                stats.bookmarkedIds.map { ayahRepository.passageId(it) }.distinct()),
             settings       = settings,
             weeklyHistory  = buildWeeklyHistory(stats.dailyHistory),
             isLoading      = ayah == null,
@@ -75,7 +76,7 @@ class HomeViewModel @Inject constructor(
         advancing = true
         loadJob = viewModelScope.launch {
             try {
-                statsRepository.markAsRead("${LocalDate.now()}:${ayah.id}")
+                statsRepository.markPassageRead(ayah.verseIds)
                 _currentAyah.value = ayahRepository.getRandomAyah()
             } finally {
                 advancing = false
@@ -84,7 +85,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun toggleBookmark(ayahId: String) {
-        viewModelScope.launch { statsRepository.toggleBookmark(ayahId) }
+        viewModelScope.launch { statsRepository.togglePassageBookmark(ayahRepository.getAyahById(ayahId).verseIds) }
     }
 
     fun isBookmarked(ayahId: String): Boolean =

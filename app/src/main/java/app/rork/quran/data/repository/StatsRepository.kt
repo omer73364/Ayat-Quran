@@ -50,6 +50,24 @@ class StatsRepository @Inject constructor(
         statsDao.upsertStats(newStats.toEntity())
     }
 
+    suspend fun markPassageRead(verseIds: List<String>) = database.withTransaction {
+        val date = LocalDate.now().format(dateFormat)
+        verseIds.distinct().forEach { markAsRead("$date:$it") }
+    }
+
+    suspend fun togglePassageBookmark(verseIds: List<String>) = database.withTransaction {
+        val stats = getStats()
+        val selected = verseIds.toSet()
+        val alreadySaved = stats.bookmarkedIds.any { it in selected }
+        val remaining = stats.bookmarkedIds.filterNot { it in selected }
+        statsDao.upsertStats(stats.copy(bookmarkedIds = if (alreadySaved) remaining else remaining + verseIds.first()).toEntity())
+    }
+
+    suspend fun removePassageBookmark(verseIds: List<String>) = database.withTransaction {
+        val stats = getStats()
+        statsDao.upsertStats(stats.copy(bookmarkedIds = stats.bookmarkedIds - verseIds.toSet()).toEntity())
+    }
+
     suspend fun toggleBookmark(ayahId: String) = database.withTransaction {
         val stats = getStats()
         val bookmarks = stats.bookmarkedIds.toMutableList()

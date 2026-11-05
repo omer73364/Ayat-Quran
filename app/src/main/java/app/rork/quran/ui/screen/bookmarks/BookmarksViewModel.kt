@@ -42,12 +42,12 @@ class BookmarksViewModel @Inject constructor(
                         null
                     }
                 }
-                _bookmarkedAyahs.value = ayahs
+                _bookmarkedAyahs.value = ayahs.distinctBy { it.id }
             }
         }
     }
 
     fun removeBookmark(ayahId: String) {
-        viewModelScope.launch { statsRepository.removeBookmark(ayahId) }
+        viewModelScope.launch { statsRepository.removePassageBookmark(ayahRepository.getAyahById(ayahId).verseIds) }
     }
 }
