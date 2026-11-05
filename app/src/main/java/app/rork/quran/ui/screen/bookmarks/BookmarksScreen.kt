@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -117,26 +118,31 @@ fun BookmarksScreen(
             androidx.compose.runtime.CompositionLocalProvider(
                 androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Rtl,
             ) {
-                androidx.compose.material3.TextField(
+                androidx.compose.foundation.text.BasicTextField(
                     value = query, onValueChange = { query = it }, singleLine = true,
-                    placeholder = { Text("ابحث في محفوظاتك", fontSize = 14.sp) },
-                    leadingIcon = { Icon(Icons.Default.Search, null, tint = colors.primary, modifier = Modifier.size(22.dp)) },
-                    trailingIcon = {
-                        if (query.isNotEmpty()) IconButton(onClick = { query = "" }) {
-                            Icon(Icons.Default.Close, "مسح البحث", tint = colors.textMuted)
+                    textStyle = androidx.compose.material3.MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = 14.sp, lineHeight = 22.sp, color = colors.text),
+                    cursorBrush = androidx.compose.ui.graphics.SolidColor(colors.primary),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 6.dp),
+                    decorationBox = { innerTextField ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                                .background(colors.card, RoundedCornerShape(14.dp))
+                                .border(1.dp, colors.border, RoundedCornerShape(14.dp))
+                                .heightIn(min = 48.dp).padding(horizontal = 12.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        ) {
+                            Icon(Icons.Default.Search, null, tint = colors.primary, modifier = Modifier.size(20.dp))
+                            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+                                if (query.isEmpty()) Text("ابحث في محفوظاتك", fontSize = 14.sp, color = colors.textMuted, maxLines = 1)
+                                innerTextField()
+                            }
+                            if (query.isNotEmpty()) IconButton(onClick = { query = "" }, modifier = Modifier.size(36.dp)) {
+                                Icon(Icons.Default.Close, "مسح البحث", tint = colors.textMuted, modifier = Modifier.size(18.dp))
+                            }
                         }
                     },
-                    shape = RoundedCornerShape(18.dp),
-                    colors = androidx.compose.material3.TextFieldDefaults.colors(
-                        focusedContainerColor = colors.card, unfocusedContainerColor = colors.card,
-                        focusedTextColor = colors.text, unfocusedTextColor = colors.text,
-                        focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                        unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                        cursorColor = colors.primary, focusedPlaceholderColor = colors.textMuted,
-                        unfocusedPlaceholderColor = colors.textMuted,
-                    ),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 10.dp)
-                        .border(1.dp, colors.border, RoundedCornerShape(18.dp)),
                 )
             }
             if (bookmarks.isEmpty()) {
