@@ -270,6 +270,16 @@ fun SettingsScreen(
                     }
                 }
             }
+            SettingsSection("مصادر المقاطع") {
+                val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+                Column(Modifier.padding(16.dp)) {
+                    Text("حدود الأقسام من Tanzil، مع عرض السور القصيرة كاملة.", color = colors.textMuted, fontSize = 13.sp)
+                    Text("© 2008–2009 Tanzil.info · CC-BY", color = colors.textMuted, fontSize = 12.sp)
+                    TextButton(onClick = { uriHandler.openUri("https://tanzil.net/docs/Quran_Metadata") }) {
+                        Text("مصدر بيانات المقاطع", color = colors.primary)
+                    }
+                }
+            }
         }
     }
 }

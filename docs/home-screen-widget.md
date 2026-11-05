@@ -1,9 +1,9 @@
 # Home-screen ayah widget
 
-After installing a build with widget support, long-press an empty area on the Android home screen, choose **Widgets**, and add **آية من القرآن** under Ayat Quran.
+After installing a build with widget support, long-press an empty area on the Android home screen, choose **Widgets**, and add **مقطع من القرآن** under Ayat Quran.
 
-- Tap the widget to open the displayed ayah in the reader.
-- Tap the refresh icon to choose another ayah without changing reading progress.
+- Tap the widget to open the displayed passage in the reader.
+- Tap the refresh icon to choose another passage without changing reading progress.
 - Resize the widget horizontally or vertically. Longer verses may be shortened in the widget; tap to read the complete verse.
 - Each widget keeps its own verse across process restarts. Android requests a daily update; battery restrictions can delay it.
 - Widget colors follow the phone's light/dark mode. All verses are available offline.
