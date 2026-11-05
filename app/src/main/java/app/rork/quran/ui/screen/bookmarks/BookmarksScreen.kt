@@ -205,7 +205,7 @@ private fun BookmarkItem(ayah: Ayah, fontSize: Int, onRemove: () -> Unit) {
                 )
             }
             Text(
-                text = "آية ${ayah.ayahNumber}",
+                text = "${ayah.reference}",
                 fontSize = 12.sp,
                 color = colors.textMuted,
             )
@@ -253,7 +253,7 @@ private fun BookmarkItem(ayah: Ayah, fontSize: Int, onRemove: () -> Unit) {
 
             IconButton(
                 onClick = {
-                    val text = "${ayah.textArabic}\n\n— سورة ${ayah.surahNameArabic}، آية ${ayah.ayahNumber}"
+                    val text = "${ayah.textArabic}\n\n— سورة ${ayah.surahNameArabic}، ${ayah.reference}"
                     val intent = Intent(Intent.ACTION_SEND).apply {
                         type = "text/plain"
                         putExtra(Intent.EXTRA_TEXT, text)

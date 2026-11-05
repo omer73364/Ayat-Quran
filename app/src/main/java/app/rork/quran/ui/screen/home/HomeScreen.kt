@@ -66,7 +66,7 @@ fun HomeScreen(
             onAyahHandled()
         }
     }
-    state.currentAyah?.takeIf { it.id == readerAyahId }?.let { ayah ->
+    state.currentAyah?.takeIf { readerAyahId in it.verseIds }?.let { ayah ->
         app.rork.quran.ui.component.ReadingDialog(ayah, state.settings.arabicFontSize) { readerAyahId = null }
     }
     val colors = LocalQuranColors.current
@@ -195,7 +195,7 @@ fun HomeScreen(
             state.currentAyah?.let { ayah ->
                 AyahCard(
                     ayah        = ayah,
-                    isBookmarked = state.stats.bookmarkedIds.contains(ayah.id),
+                    isBookmarked = ayah.verseIds.any { it in state.stats.bookmarkedIds },
                     onBookmark  = { viewModel.toggleBookmark(ayah.id) },
                     fontSize = state.settings.arabicFontSize,
                     onNext      = { viewModel.loadNextAndMarkRead(ayah.id) },

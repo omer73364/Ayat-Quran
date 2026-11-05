@@ -80,7 +80,7 @@ fun ReadingDialog(ayah: Ayah, fontSize: Int, onDismiss: () -> Unit) {
                         IconButton(onClick = {
                             context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                                 type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, "${ayah.textArabic}\n\n— سورة ${ayah.surahNameArabic}، آية ${ayah.ayahNumber}")
+                                putExtra(Intent.EXTRA_TEXT, "${ayah.textArabic}\n\n— سورة ${ayah.surahNameArabic}، ${ayah.reference}")
                             }, "مشاركة الآية"))
                         }, modifier = Modifier.size(44.dp).background(colors.surfaceAlt, RoundedCornerShape(14.dp))) {
                             Icon(Icons.Default.Share, "مشاركة الآية", tint = colors.primary)
@@ -105,7 +105,7 @@ fun ReadingDialog(ayah: Ayah, fontSize: Int, onDismiss: () -> Unit) {
                                 lineHeight = (readingSize * 1.9f).sp, textAlign = TextAlign.Center, color = colors.text,
                                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
                         }
-                        Text("الآية ${ayah.ayahNumber}", color = colors.primary, fontSize = 14.sp,
+                        Text("ال${ayah.reference}", color = colors.primary, fontSize = 14.sp,
                             modifier = Modifier.background(colors.primary.copy(alpha = .07f), RoundedCornerShape(50)).padding(horizontal = 18.dp, vertical = 8.dp))
                         Box(Modifier.fillMaxWidth().height(1.dp).background(colors.border))
                         TafseerSection(ayah)

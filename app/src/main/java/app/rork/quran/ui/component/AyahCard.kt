@@ -95,7 +95,7 @@ fun AyahCard(
             ) {
                 Text(ayah.surahNameArabic, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.primary)
             }
-            Text("آية ${ayah.ayahNumber}", fontSize = 13.sp, color = colors.textMuted)
+            Text("${ayah.reference}", fontSize = 13.sp, color = colors.textMuted)
         }
         Spacer(Modifier.height(16.dp))
         Box(Modifier.fillMaxWidth().height(1.dp).background(colors.border))
@@ -136,7 +136,7 @@ fun AyahCard(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("قرأت • التالية", color = colors.textOnPrimary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text("قرأت المقطع • التالي", color = colors.textOnPrimary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.size(8.dp))
                 Icon(Icons.Default.Refresh, null, tint = colors.textOnPrimary, modifier = Modifier.size(16.dp))
             }
@@ -153,7 +153,7 @@ fun AyahCard(
             }
             IconButton(
                 onClick = {
-                    val text = "${ayah.textArabic}\n\n— سورة ${ayah.surahNameArabic}، آية ${ayah.ayahNumber}"
+                    val text = "${ayah.textArabic}\n\n— سورة ${ayah.surahNameArabic}، ${ayah.reference}"
                     context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text) }, "مشاركة الآية"))
                 },
                 modifier = Modifier.size(42.dp).clip(CircleShape).background(colors.surfaceAlt),
