@@ -14,6 +14,32 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class NotificationTafseerTest {
+    @Test fun longerSemanticGroupsAreNotReplacedOrCutInNotificationPayloads() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val context = instrumentation.targetContext
+        if (Build.VERSION.SDK_INT >= 33) {
+            instrumentation.uiAutomation.grantRuntimePermission(context.packageName, android.Manifest.permission.POST_NOTIFICATIONS)
+        }
+        val helper = NotificationHelper(context)
+        helper.createChannel()
+        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val id = 9175
+        try {
+            assertTrue(helper.showAyahNotification(Ayah("53-40", 53, "النجم", 40, "قديم"), id))
+            val deadline = android.os.SystemClock.elapsedRealtime() + 5_000
+            while (manager.activeNotifications.none { it.id == id } && android.os.SystemClock.elapsedRealtime() < deadline) {
+                Thread.sleep(100)
+            }
+            val notification = manager.activeNotifications.single { it.id == id }.notification
+            val passage = app.rork.quran.data.repository.PassageCatalog(context).resolve("53-40")
+            assertEquals(17, passage.verseIds.size)
+            assertEquals(passage.textArabic, notification.extras.getCharSequence(android.app.Notification.EXTRA_BIG_TEXT).toString())
+            assertTrue(notification.extras.getCharSequence(android.app.Notification.EXTRA_SUB_TEXT).toString().contains(passage.reference))
+        } finally {
+            manager.cancel(id)
+        }
+    }
+
     @Test fun tafseerActionOpensTheDisplayedVerseAndReader() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext

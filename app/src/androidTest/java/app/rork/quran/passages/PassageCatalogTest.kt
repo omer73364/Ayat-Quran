@@ -32,19 +32,33 @@ class PassageCatalogTest {
 
     @Test fun alMaunAlwaysIncludesTheContextInsteadOfAnIsolatedWarning() {
         val passage = catalog.resolve("107-4")
-        assertEquals((1..7).map { "107-$it" }, passage.verseIds)
+        assertEquals((4..7).map { "107-$it" }, passage.verseIds)
         assertTrue(passage.textArabic.contains("﴿4﴾"))
         assertTrue(passage.textArabic.contains("﴿7﴾"))
         assertEquals(passage, catalog.resolve("107-5"))
-        assertEquals("الآيات 1–7", passage.reference)
+        assertEquals("الآيات 4–7", passage.reference)
     }
 
-    @Test fun remindersUseWholeShortPassagesAndLegacyJsonResolvesToTheSameGroup() {
+
+    @Test fun singleAyahsAndLongerExceptionsFollowTheSourceRatherThanSurahLength() {
+        assertEquals(listOf("1-1"), catalog.resolve("1-1").verseIds)
+        assertEquals((2..4).map { "1-$it" }, catalog.resolve("1-3").verseIds)
+        assertEquals(listOf("107-1"), catalog.resolve("107-1").verseIds)
+        assertEquals(listOf("107-2", "107-3"), catalog.resolve("107-3").verseIds)
+        assertEquals((1..6).map { "114-$it" }, catalog.resolve("114-6").verseIds)
+    }
+
+    @Test fun remindersPreserveEveryGroupIncludingLongExceptionsAndLegacyPayloads() {
         val reminders = catalog.reminderPassages()
-        assertTrue(reminders.isNotEmpty())
+        assertEquals(4567, reminders.size)
+        assertEquals(3636, reminders.count { it.verseIds.size == 1 })
+        assertEquals(885, reminders.count { it.verseIds.size in 2..5 })
+        assertEquals(46, reminders.count { it.verseIds.size > 5 })
+        assertEquals((1..114).toSet(), reminders.map { it.surahNumber }.toSet())
+        val long = catalog.forReminder("53-40")
+        assertEquals((36..52).map { "53-$it" }, long.verseIds)
+        assertTrue(reminders.contains(long))
         reminders.forEach {
-            assertTrue(it.textArabic.length <= 1200)
-            assertTrue(it.verseIds.size <= 12)
             assertEquals(catalog.resolve(it.id), it)
         }
         val legacy = Gson().fromJson("""{"id":"107-4","surahNumber":107,"surahNameArabic":"الماعون","ayahNumber":4,"textArabic":"قديم"}""", Ayah::class.java)
