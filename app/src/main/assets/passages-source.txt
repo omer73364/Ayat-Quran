@@ -1,0 +1,6 @@
+Derived context boundaries: Tanzil Project Quran metadata v1.0.
+Copyright (C) 2008-2009 Tanzil.info. Source metadata declares license="cc-by".
+https://tanzil.net/docs/Quran_Metadata
+https://tanzil.net/res/text/metadata/quran-data.xml
+Modification: surahs with 12 or fewer ayahs are retained in full.
+Generated with tools/generate_passages.py. No scholarly review is implied.

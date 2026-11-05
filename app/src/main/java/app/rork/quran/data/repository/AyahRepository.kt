@@ -21,6 +21,7 @@ class AyahRepository @Inject constructor(
     private val ayahDao: AyahDao,
     private val gson: Gson,
 ) {
+    private val passages = PassageCatalog(context)
     private val seedMutex = Mutex()
     private var seeded = false
 
@@ -45,27 +46,22 @@ class AyahRepository @Inject constructor(
         val readCount = ayahDao.readCount()
         if (readCount >= total) ayahDao.resetReadVerses()
         val entity = ayahDao.getRandomUnreadAyah() ?: ayahDao.getRandomAyah()
-        ayahDao.markAsRead(ReadVerseEntity(entity.id))
-        entity.toDomain()
+        val passage = passages.resolve(entity.id)
+        ayahDao.markPassageSelected(passage.verseIds.map(::ReadVerseEntity))
+        passage
     }
 
+    fun passageId(id: String): String = passages.resolve(id).id
+
     suspend fun getAyahById(id: String): Ayah = withContext(Dispatchers.IO) {
-        ensureSeeded()
-        (ayahDao.getAyahById(id) ?: ayahDao.getRandomAyah()).toDomain()
+        // Direct links and bookmarks already have all their text in the bundled catalog.
+        passages.resolve(id)
     }
 
     /** Get N random ayahs for scheduling notifications (no read tracking) */
     suspend fun getRandomAyahsForNotifications(count: Int): List<Ayah> =
         withContext(Dispatchers.IO) {
-            ensureSeeded()
-            ayahDao.getRandomAyahs(count).map { it.toDomain() }
+            require(count > 0)
+            passages.reminderPassages().shuffled().take(count)
         }
-
-    private fun AyahEntity.toDomain() = Ayah(
-        id = id,
-        surahNumber = surahNumber,
-        surahNameArabic = surahNameArabic,
-        ayahNumber = ayahNumber,
-        textArabic = textArabic,
-    )
 }

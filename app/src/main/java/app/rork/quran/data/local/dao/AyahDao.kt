@@ -31,6 +31,9 @@ interface AyahDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun markAsRead(entity: ReadVerseEntity)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun markPassageSelected(verses: List<ReadVerseEntity>)
+
     @Query("SELECT COUNT(*) FROM read_verses")
     suspend fun readCount(): Int
 
