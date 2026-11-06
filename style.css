@@ -31,3 +31,12 @@ body{font-size:16px;line-height:1.8}
 @media(max-width:760px){.hero-actions .button,.download-card .button{font-size:13px;padding:10px 14px}.nav .button.small{font-size:12px;padding:8px 11px}}
 .button{white-space:nowrap}
 @media(max-width:400px){.nav{gap:10px}.nav .brand{font-size:14px;gap:6px}.nav .brand img{width:30px;height:30px}.nav .button.small svg{display:none}}
+
+/* Home-screen widget feature */
+.widget-section{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:70px;padding-block:0 100px}
+.widget-copy h2{font-size:43px;margin-top:16px}.widget-copy>p{font-size:15px;line-height:2.2;color:#66745f;margin-top:18px;max-width:510px}
+.widget-scene{background:#e8ecdf;border:1px solid #d4dcc8;border-radius:28px;padding:52px 30px 30px;position:relative}
+.widget-preview{background:#f7f5ee;border:1px solid #d2dac8;border-radius:24px;padding:18px 20px 20px;box-shadow:0 18px 35px #173f3310;transform:rotate(-2deg);text-align:center}
+.widget-preview-header{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:10px;color:#237559}.widget-preview-header img{border-radius:10px}.widget-preview-header strong{font-size:14px;font-weight:600}.widget-preview-header>span{font-size:26px;line-height:36px;background:#e8ecdf;border-radius:50%}
+.widget-preview-reference{display:block;font-size:12px;color:#7a8775;margin-top:16px}.widget-preview-ayah{font-family:Quran,serif;font-size:32px;line-height:2.1;color:#243e35;margin:22px 0}.widget-preview-footer{font-size:12px;color:#237559}.widget-caption{display:flex;align-items:center;justify-content:center;gap:14px;font-size:12px;color:#66745f;margin-top:28px}.widget-caption>span{color:#ad9156}
+@media(max-width:760px){.widget-section{grid-template-columns:1fr;gap:28px;padding-bottom:60px}.widget-copy h2{font-size:36px}.widget-scene{padding:32px 22px 25px}.widget-preview-ayah{font-size:30px}}
