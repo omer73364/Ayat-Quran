@@ -47,9 +47,9 @@ It also sends you a **verse of the Quran as a notification** during your busy da
 <img src="docs/screenshots/reminders.png" width="200" alt="Reminder status and settings" />
 <img src="docs/screenshots/reader.png" width="200" alt="Full-screen reader" />
 <img src="docs/screenshots/settings.jpg" width="200" alt="Reminder settings: daily count and time window" />  
-<img src="docs/screenshots/notifications.jpg" width="200" alt="Verse notification with 'Read' and 'Tafseer' button" />
-<img src="docs/screenshots/widget.jpg" width="200" alt="Home Widget" />
 <img src="docs/screenshots/tafseer.jpg" width="200" alt="Verse with its explanation (tafseer)" />
+<img src="docs/screenshots/widget.jpg" width="200" alt="Home Widget" />
+<img src="docs/screenshots/notifications.jpg" width="200" alt="Verse notification with 'Read' and 'Tafseer' button" />
 
 </div>
 
